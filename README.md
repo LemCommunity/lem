@@ -39,10 +39,16 @@ Install the dependencies (Poetry will create a virtual environment automatically
 ```
 poetry install --with dev
 ```
-If you want to enter the virtual environment, run the following command
+Enter the virtual environment that Poetry creates for you:
 ```
 poetry shell
 ```
+
+Now, install [pre-commit](https://pre-commit.com/) hooks by running:
+```
+pre-commit install
+```
+**Note:** Be sure you are in the same directory as `.pre-commit-config.yaml` file.
 
 Build images and start containers. No worries, first run will take a lot of time. Docker has to download a lot of data, but it will store it in a cache for later retrieval.
 ```
