@@ -53,19 +53,19 @@ RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* \
 	&& rm -rf /wheels/
 
 COPY ./docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN sed -i 's/\r$//g' /entrypoint.sh && chmod +x /entrypoint.sh
 
 COPY ./docker/start_scripts/django.sh /start-django.sh
-RUN chmod +x /start-django.sh
+RUN sed -i 's/\r$//g' /start-django.sh && chmod +x /start-django.sh
 
 COPY ./docker/start_scripts/celery_worker.sh /start-celeryworker.sh
-RUN chmod +x /start-celeryworker.sh
+RUN sed -i 's/\r$//g' /start-celeryworker.sh && chmod +x /start-celeryworker.sh
 
 COPY ./docker/start_scripts/celery_beat.sh /start-celerybeat.sh
-RUN chmod +x /start-celerybeat.sh
+RUN sed -i 's/\r$//g' /start-celerybeat.sh && chmod +x /start-celerybeat.sh
 
 COPY ./docker/start_scripts/celery_flower.sh /start-flower.sh
-RUN chmod +x /start-flower.sh
+RUN sed -i 's/\r$//g' /start-flower.sh && chmod +x /start-flower.sh
 
 # copy application code to WORKDIR
 COPY . ${APP_HOME}
