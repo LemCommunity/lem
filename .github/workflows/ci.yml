@@ -46,8 +46,10 @@ jobs:
         run:  docker-compose build
       - name: Run DB Migrations
         run:  docker-compose run --rm django python manage.py migrate
-      - name: Run Django Tests and generate coverage.lcov file
-        run:  sudo docker-compose run django /bin/bash -c "coverage run -m pytest && coverage lcov"
+      - name: Run Django Tests
+        run:  docker-compose run django coverage run -m pytest
+      - name: Generate coverage.lcov
+        run: docker-compose run django coverage lcov
       - name: Tear down the Stack
         run:  docker-compose down
       - name: Coveralls GitHub Action

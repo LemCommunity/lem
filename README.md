@@ -1,5 +1,5 @@
 # LEM
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/LemCommunity/lem/main.svg)](https://results.pre-commit.ci/latest/github/LemCommunity/lem/main)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/LemCommunity/lem/main.svg)](https://results.pre-commit.ci/latest/github/LemCommunity/lem/main) [![Coverage Status](https://coveralls.io/repos/github/LemCommunity/lem/badge.svg?branch=main)](https://coveralls.io/github/LemCommunity/lem?branch=main)
 
 Social media for book lovers (similar to Goodreads)
 
@@ -39,10 +39,16 @@ Install the dependencies (Poetry will create a virtual environment automatically
 ```
 poetry install --with dev
 ```
-If you want to enter the virtual environment, run the following command
+Enter the virtual environment that Poetry creates for you:
 ```
 poetry shell
 ```
+
+Now, install [pre-commit](https://pre-commit.com/) hooks by running:
+```
+pre-commit install
+```
+**Note:** Be sure you are in the same directory as `.pre-commit-config.yaml` file.
 
 Build images and start containers. No worries, first run will take a lot of time. Docker has to download a lot of data, but it will store it in a cache for later retrieval.
 ```
