@@ -37,7 +37,7 @@ cd lem
 ```
 Install the dependencies (Poetry will create a virtual environment automatically for you)
 ```
-poetry install
+poetry install --with dev
 ```
 Enter the virtual environment that Poetry creates for you:
 ```
