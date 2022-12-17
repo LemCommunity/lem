@@ -90,5 +90,5 @@ poetry add <PACKAGE_NAME>
 
 Use the command below to generate the requirements file
 ```
-poetry export --with production -f requirements.txt --output requirements.txt
+poetry export --with production --with dev -f requirements.txt --output requirements.txt
 ```
