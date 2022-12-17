@@ -12,9 +12,9 @@ WORKDIR ${APP_HOME}
 # Install apt packages
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # dependencies for building Python packages
-  build-essential=12.9 \
+  build-essential \
   # psycopg2 dependencies
-  libpq-dev=13.8-0+deb11u1
+  libpq-dev
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements.txt .
@@ -37,9 +37,9 @@ ENV PYTHONDONTWRITEBYTECODE 1
 # Install required system dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # psycopg2 dependencies
-  libpq-dev=13.8-0+deb11u1 \
+  libpq-dev \
   # Translations dependencies
-  gettext=0.21-4 \
+  gettext \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
