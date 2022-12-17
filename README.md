@@ -37,7 +37,7 @@ cd lem
 ```
 Install the dependencies (Poetry will create a virtual environment automatically for you)
 ```
-poetry install --with dev
+poetry install
 ```
 Enter the virtual environment that Poetry creates for you:
 ```
@@ -78,4 +78,17 @@ See logs for a particular service:
 docker-compose logs <SERVICE_NAME>
 e.g.
 docker-compose logs django
+```
+
+## How to install packages
+We are using Poetry for installing dependencies and then generating with it standard Python requirements.txt file for Docker.
+
+You can install a Python package from PyPI by typing:
+```
+poetry add <PACKAGE_NAME>
+```
+
+Use the command below to generate the requirements file
+```
+poetry export --with production -f requirements.txt --output requirements.txt
 ```
