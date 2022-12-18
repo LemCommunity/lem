@@ -6,7 +6,7 @@ volumes:
 services:
   django: &django
     build:
-      context: .
+      context: ./backend
       dockerfile: ./docker/Dockerfile
     image: lem_local_django
     container_name: lem_local_django
@@ -15,7 +15,7 @@ services:
       - postgres
       - redis
     volumes:
-      - .:/src:z
+      - ./backend:/src:z
     env_file:
       - ./.envs/local/django.env
       - ./.envs/local/postgres.env
