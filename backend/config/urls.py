@@ -15,8 +15,10 @@ urlpatterns = [
         name="api-docs",
     ),
     path("api/forum/", include("backend.apps.forum.urls")),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
+    +static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
+    path("api/books", include("backend.apps.books.urls")),
+    +static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
+]
 if settings.DEBUG:
     urlpatterns += [
         path("debug/", include("debug_toolbar.urls")),
