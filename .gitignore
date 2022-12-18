@@ -10,18 +10,18 @@ htmlcov/
 coverage.lcov
 .pytest_cache/
 
-# Celery stuff
+# Celery
 celerybeat-schedule
 celerybeat.pid
 
-# Pycharm stuff
+# Pycharm
 .idea/
 .idea_modules/
 
-# Vscode stuff
+# Vscode
 .vscode
 
-# Environment stuff
+# Environment
 .envs/production
 
 # Frontend stuff
