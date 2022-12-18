@@ -19,7 +19,7 @@ celerybeat.pid
 .idea_modules/
 
 # Vscode
-.vscode
+.vscode/
 
 # Environment
 .envs/production
