@@ -56,4 +56,5 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: "./backend/coverage.lcov"
+          base-path: "./backend"
         uses: coverallsapp/github-action@1.1.3
