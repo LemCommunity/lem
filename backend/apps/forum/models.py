@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
+from django.core.validators import FileExtensionValidator, RegexValidator
 from django.db import models
 
-from .validators import validate_alphabetic
+from backend.apps.forum.utils import MarkdownTextField, get_upload_path
 
 # Create your models here.
 
@@ -16,7 +17,15 @@ class Category(models.Model):
 
     name = models.CharField(
         max_length=100,
+        blank=False,
         unique=True,
+        verbose_name="Category name",
+        validators=[
+            RegexValidator(
+                regex=r"^[a-zA-Z]*$",
+                message="Input must contain only alphabetic characters",
+            ),
+        ],
     )
 
     def __str__(self):
@@ -30,9 +39,36 @@ class Category(models.Model):
             self.name = self.name.capitalize()
         return self.name
 
-    def clean(self):
-        """Validate the name field of the category."""
-        validate_alphabetic(self.name)
+
+class Files:
+    """A model for storing images and files.
+    Fields:
+        image (ImageField): storage for the image.
+        file (FileField): storage for the file.
+    """
+
+    image = models.ImageField(
+        width_field=500,
+        height_field=500,
+        upload_to=get_upload_path,
+        verbose_name="Image",
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=["png", "jpg", "jpeg"],
+                message="Wrong image format. Try with: png, jpg, jpeg",
+            ),
+        ],
+    )
+    file = models.FileField(
+        upload_to=get_upload_path,
+        verbose_name="File",
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=["doc", "pdf", "ppt"],
+                message="Wrong file format. Try with: doc, pdf, ppt",
+            ),
+        ],
+    )
 
 
 class Post(models.Model):
@@ -52,18 +88,35 @@ class Post(models.Model):
 
     title = models.CharField(
         max_length=100,
+        verbose_name="Post title",
+        validators=[
+            RegexValidator(
+                regex=r"^[a-zA-Z]*$",
+                message="Input must contain only alphabetic characters",
+            ),
+        ],
     )
-    body = models.TextField()
+    body = MarkdownTextField(
+        verbose_name="Post body",
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
     category = models.ForeignKey(
         Category,
+        verbose_name="Post category",
         on_delete=models.CASCADE,
         related_name="posts_category",
     )
+    files = models.OneToOneField(
+        Files,
+        verbose_name="Post files",
+        on_delete=models.CASCADE,
+        related_name="posts_files",
+    )
     author = models.ForeignKey(
         get_user_model(),
+        verbose_name="Post author",
         on_delete=models.CASCADE,
         related_name="posts_author",
     )
@@ -78,10 +131,6 @@ class Post(models.Model):
         if not self.title[0].isupper():
             self.title = self.title.capitalize()
         return self.title
-
-    def clean(self):
-        """Validate the name field of the post."""
-        validate_alphabetic(self.title)
 
 
 class Reply(models.Model):
@@ -100,11 +149,13 @@ class Reply(models.Model):
         post (ForeignKey): A foreign key to the Post.
     """
 
-    content = models.TextField()
+    content = MarkdownTextField(verbose_name="Reply content")
     created_at = models.DateTimeField(
+        verbose_name="Reply created",
         auto_now_add=True,
     )
     updated_at = models.DateTimeField(
+        verbose_name="Reply updated",
         auto_now=True,
     )
     parent = models.ForeignKey(
@@ -112,16 +163,25 @@ class Reply(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
+        verbose_name="Parent for Post object or None",
         related_name="children",
     )
-    author = models.ForeignKey(
+    files = models.OneToOneField(
+        Files,
+        on_delete=models.CASCADE,
+        verbose_name="Reply files",
+        related_name="reply_files",
+    )
+    author = models.OneToOneField(
         get_user_model(),
         on_delete=models.CASCADE,
+        verbose_name="Reply author",
         related_name="reply_author",
     )
-    post = models.ForeignKey(
+    post = models.OneToOneField(
         Post,
         on_delete=models.CASCADE,
+        verbose_name="Reply post",
         related_name="reply_post",
     )
 
