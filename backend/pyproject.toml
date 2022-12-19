@@ -65,7 +65,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.isort]
 profile = "black"
 line_length = 88
-known_first_party = "backend"
+known_first_party = "apps,config"
 multi_line_output = 3
 default_section = "THIRDPARTY"
 skip = "venv/"
