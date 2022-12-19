@@ -4,4 +4,4 @@ set -o errexit
 set -o nounset
 
 
-watchfiles celery.__main__.main --args '-A backend.config.celery worker -l INFO'
+watchfiles celery.__main__.main --args '-A config.celery worker -l INFO'

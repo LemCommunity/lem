@@ -1,6 +1,6 @@
 from django.urls import reverse
 
-from backend.apps.users.models import User
+from apps.users.models import User
 
 
 class TestUserAdmin:
