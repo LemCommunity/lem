@@ -1,3 +1,7 @@
-from django.shortcuts import render
+# Temporary import HttpResponse
+from django.http import HttpResponse
 
-# Create your views here.
+
+# Temporary view to display welcome page.
+def quote_cms(request):
+    return HttpResponse("<h3>Welcome to quotes cms</h3>")
