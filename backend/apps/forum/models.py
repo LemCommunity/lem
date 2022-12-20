@@ -1,10 +1,11 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import FileExtensionValidator, RegexValidator
+from django.core.validators import RegexValidator
 from django.db import models
 
-from backend.apps.forum.utils import MarkdownTextField, get_upload_path
+from backend.apps.forum.utils import MarkdownTextField
 
 # Create your models here.
+User = get_user_model()
 
 
 class Category(models.Model):
@@ -40,37 +41,6 @@ class Category(models.Model):
         return self.name
 
 
-class Files:
-    """A model for storing images and files.
-    Fields:
-        image (ImageField): storage for the image.
-        file (FileField): storage for the file.
-    """
-
-    image = models.ImageField(
-        width_field=500,
-        height_field=500,
-        upload_to=get_upload_path,
-        verbose_name="Image",
-        validators=[
-            FileExtensionValidator(
-                allowed_extensions=["png", "jpg", "jpeg"],
-                message="Wrong image format. Try with: png, jpg, jpeg",
-            ),
-        ],
-    )
-    file = models.FileField(
-        upload_to=get_upload_path,
-        verbose_name="File",
-        validators=[
-            FileExtensionValidator(
-                allowed_extensions=["doc", "pdf", "ppt"],
-                message="Wrong file format. Try with: doc, pdf, ppt",
-            ),
-        ],
-    )
-
-
 class Post(models.Model):
     """A model representing a post model.
 
@@ -102,20 +72,14 @@ class Post(models.Model):
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
-    category = models.ForeignKey(
+    category = models.OneToOneField(
         Category,
         verbose_name="Post category",
         on_delete=models.CASCADE,
         related_name="posts_category",
     )
-    files = models.OneToOneField(
-        Files,
-        verbose_name="Post files",
-        on_delete=models.CASCADE,
-        related_name="posts_files",
-    )
     author = models.ForeignKey(
-        get_user_model(),
+        User,
         verbose_name="Post author",
         on_delete=models.CASCADE,
         related_name="posts_author",
@@ -166,14 +130,8 @@ class Reply(models.Model):
         verbose_name="Parent for Post object or None",
         related_name="children",
     )
-    files = models.OneToOneField(
-        Files,
-        on_delete=models.CASCADE,
-        verbose_name="Reply files",
-        related_name="reply_files",
-    )
     author = models.OneToOneField(
-        get_user_model(),
+        User,
         on_delete=models.CASCADE,
         verbose_name="Reply author",
         related_name="reply_author",

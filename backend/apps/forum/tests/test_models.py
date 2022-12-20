@@ -1,47 +1,40 @@
 import pytest
 
-from backend.apps.forum.models.models import Category, Post
+from backend.apps.forum.models import Category
+from backend.apps.forum.tests.factories import CategoryFactory
 
 
 @pytest.mark.django_db(transaction=True)
 class TestCategoryModel:
-    @pytest.mark.parametrize(
-        ("name, result"),
-        [("test", "Test"), ("testcategory", "Testcategory")],
-    )
-    def test_capitalize_name(self, name, result):
-        # Create a new Category instance
-        category = Category.objects.create(name=name)
-
-        # Check that the name field is correctly set
-        assert category.capitalize_name == result
+    @pytest.fixture(autouse=True)
+    def category_module(self, request) -> Category:
+        return CategoryFactory.build(name=request.param)
 
     @pytest.mark.parametrize(
-        "name",
-        ["Test", "Testcategory"],
+        "category_module, expected",
+        [
+            ("books", "Books"),
+            ("ebooks", "Ebooks"),
+        ],
+        indirect=["category_module"],
     )
-    def test_category_alphabetic(self, name):
-        category = Category.objects.create(name=name)
-        category.clean()
+    def test_category_capitalize_name(self, category_module, expected):
+        assert category_module.capitalize_name == expected
 
 
-@pytest.mark.django_db(transaction=True)
-class TestPostModel:
-    @pytest.mark.parametrize(
-        ("name, result"),
-        [("test", "Test"), ("testpost", "Testpost")],
-    )
-    def test_capitalize_title(self, title, result):
-        # Create a new Post instance
-        post = Post.objects.create(title=title)
+# @pytest.mark.django_db(transaction=True)
+# class TestPostModel:
+#     @pytest.fixture(autouse=True)
+#     def post_module(self, request) -> Post:
+#         return PostFactory.build(title=request.param)
 
-        # Check that the title field is correctly set
-        assert post.capitalize_title == result
-
-    @pytest.mark.parametrize(
-        "name",
-        ["Test", "Testpost"],
-    )
-    def test_post_alphabetic(self, title):
-        post = Post.objects.create(title=title)
-        post.clean()
+#     @pytest.mark.parametrize(
+#         "post_module, expected",
+#         [
+#             ("test", "Test"),
+#             ("testpost", "Testpost"),
+#         ],
+#         indirect=["post_module"],
+#     )
+#     def test_post_capitalize_title(self, post_module, expected):
+#         assert post_module.capitalize_title == expected
