@@ -16,7 +16,7 @@ urlpatterns = (
             name="api-docs",
         ),
         path("api/forum/", include("apps.forum.urls")),
-        path("api/books/", include("apps.books.urls"), name="books-api"),
+        path("api/books/", include("apps.books.urls")),
     ]
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 )
