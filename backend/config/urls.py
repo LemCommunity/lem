@@ -15,6 +15,7 @@ urlpatterns = [
         name="api-docs",
     ),
     path("api/forum/", include("apps.forum.urls")),
+    path("api/news/", include("apps.news.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
