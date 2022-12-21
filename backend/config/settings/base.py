@@ -68,6 +68,7 @@ LOCAL_APPS = [
     "apps.users",
     "apps.forum",
     "apps.news",
+    "apps.books",
     "apps.quotes",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
