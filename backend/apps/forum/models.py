@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
 from django.db import models
+from martor.models import MartorField
 
-from backend.apps.forum.utils import MarkdownTextField
+from backend.apps.forum.utils import is_html, markdown_text
 
 # Create your models here.
 User = get_user_model()
@@ -33,13 +34,6 @@ class Category(models.Model):
         """Return the string representation of the model."""
         return self.name
 
-    @property
-    def capitalize_name(self):
-        """Return the capitalized name of the category."""
-        if not self.name[0].isupper():
-            self.name = self.name.capitalize()
-        return self.name
-
 
 class Post(models.Model):
     """A model representing a post model.
@@ -61,14 +55,12 @@ class Post(models.Model):
         verbose_name="Post title",
         validators=[
             RegexValidator(
-                regex=r"^[a-zA-Z]*$",
+                regex=r"^[a-zA-Z ]+$",
                 message="Input must contain only alphabetic characters",
             ),
         ],
     )
-    body = MarkdownTextField(
-        verbose_name="Post body",
-    )
+    body = MartorField()
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
@@ -89,12 +81,14 @@ class Post(models.Model):
         """Return the string representation of the model."""
         return self.title
 
+    def save(self, *args, **kwargs):
+        self.body = markdown_text(self.body)
+        super(Post, self).save(*args, **kwargs)
+
     @property
-    def capitalize_title(self):
-        """Return the capitalized title of the post."""
-        if not self.title[0].isupper():
-            self.title = self.title.capitalize()
-        return self.title
+    def is_html_text(self):
+        if self.body is not None:
+            return is_html(self.body)
 
 
 class Reply(models.Model):
@@ -113,7 +107,7 @@ class Reply(models.Model):
         post (ForeignKey): A foreign key to the Post.
     """
 
-    content = MarkdownTextField(verbose_name="Reply content")
+    content = MartorField()
     created_at = models.DateTimeField(
         verbose_name="Reply created",
         auto_now_add=True,
@@ -147,9 +141,18 @@ class Reply(models.Model):
         """Return the string representation of the model."""
         return "Reply"
 
+    def save(self, *args, **kwargs):
+        self.content = markdown_text(self.content)
+        super(Reply, self).save(*args, **kwargs)
+
     @property
     def is_parent(self):
         """Return `True` if instance is a parent."""
         if self.parent is not None:
-            return False
-        return True
+            return True
+        return False
+
+    @property
+    def is_html_text(self):
+        if self.content is not None:
+            return is_html(self.content)

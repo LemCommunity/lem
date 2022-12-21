@@ -1,11 +1,21 @@
-import markdown2
-from django.db import models
+import re
+
+from markdown2 import Markdown
+
+markdowner = Markdown()
 
 
-class MarkdownTextField(models.TextField):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+def markdown_text(instance):
+    new_list = []
+    if instance:
+        text_list = instance.splitlines()
+        for text in text_list:
+            mark_text = str(markdowner.convert(text))
+            new_list.append(mark_text)
+    string = "".join(new_list)
+    return string
 
-    def value_to_string(self, obj):
-        value = self.value_from_object(obj)
-        return markdown2.markdown(value)
+
+def is_html(string):
+    list_str = string.split("\n")
+    return any(re.match(r"^<[a-z]+>", s) for s in list_str)

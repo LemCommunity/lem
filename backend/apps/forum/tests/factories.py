@@ -1,35 +1,34 @@
-from django.contrib.auth import get_user_model
 from factory import Faker, SubFactory
 from factory.django import DjangoModelFactory
 
 from backend.apps.forum.models import Category, Post, Reply
-
-User = get_user_model()
+from backend.apps.forum.tests.providers import fake_post
+from backend.apps.users.tests.factories import UserFactory
 
 
 class CategoryFactory(DjangoModelFactory):
     class Meta:
         model = Category
-        django_get_or_create = ("name",)
 
-    name = Faker("name")
+    name = Faker(provider="bothify", text="??????")
 
 
 class PostFactory(DjangoModelFactory):
     class Meta:
         model = Post
 
-    title = Faker("title")
-    body = Faker("body")
+    title = Faker(provider="name")
+    body = fake_post
+    created_at = Faker(provider="date_time")
     category = SubFactory(CategoryFactory)
-    author = SubFactory(User)
+    author = SubFactory(UserFactory)
 
 
 class ReplyFactory(DjangoModelFactory):
     class Meta:
         model = Reply
 
-    content = Faker("comment")
-    parent = SubFactory(CategoryFactory)
-    author = SubFactory(User)
+    content = fake_post
+    parent = SubFactory("backend.apps.forum.tests.factories.ReplyFactory", parent=None)
+    author = SubFactory(UserFactory)
     post = SubFactory(PostFactory)
