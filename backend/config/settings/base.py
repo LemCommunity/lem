@@ -64,6 +64,7 @@ THIRD_PARTY_APPS = [
     "drf_spectacular",
 ]
 
+<<<<<<< HEAD
 LOCAL_APPS = [
     "apps.users",
     "apps.forum",
@@ -71,6 +72,9 @@ LOCAL_APPS = [
     "apps.books",
     "apps.quotes",
 ]
+=======
+LOCAL_APPS = ["apps.users", "apps.forum", "apps.news", "apps.books"]
+>>>>>>> main
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
