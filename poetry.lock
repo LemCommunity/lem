@@ -260,6 +260,26 @@ jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
 uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
+name = "bleach"
+version = "5.0.1"
+description = "An easy safelist-based HTML-sanitizing tool."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "bleach-5.0.1-py3-none-any.whl", hash = "sha256:085f7f33c15bd408dd9b17a4ad77c577db66d76203e5984b1bd59baeee948b2a"},
+    {file = "bleach-5.0.1.tar.gz", hash = "sha256:0d03255c47eb9bd2f26aa9bb7f2107732e7e8fe195ca2f64709fcf3b0a4a085c"},
+]
+
+[package.dependencies]
+six = ">=1.9.0"
+webencodings = "*"
+
+[package.extras]
+css = ["tinycss2 (>=1.1.0,<1.2)"]
+dev = ["Sphinx (==4.3.2)", "black (==22.3.0)", "build (==0.8.0)", "flake8 (==4.0.1)", "hashin (==0.17.0)", "mypy (==0.961)", "pip-tools (==6.6.2)", "pytest (==7.1.2)", "tox (==3.25.0)", "twine (==4.0.1)", "wheel (==0.37.1)"]
+
+[[package]]
 name = "celery"
 version = "5.2.7"
 description = "Distributed Task Queue."
@@ -940,7 +960,7 @@ doc = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-spelling"]
 name = "faker"
 version = "15.3.4"
 description = "Faker is a Python package that generates fake data for you."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -1546,6 +1566,21 @@ files = [
 ]
 
 [[package]]
+name = "markdown"
+version = "3.3.4"
+description = "Python implementation of Markdown."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "Markdown-3.3.4-py3-none-any.whl", hash = "sha256:96c3ba1261de2f7547b46a00ea8463832c921d3f9d6aba3f255a6f71386db20c"},
+    {file = "Markdown-3.3.4.tar.gz", hash = "sha256:31b5b491868dcc87d6c24b7e3d19a0d730d59d3e46f4eea6430a321bed387a49"},
+]
+
+[package.extras]
+testing = ["coverage", "pyyaml"]
+
+[[package]]
 name = "markdown2"
 version = "2.4.6"
 description = "A fast and complete Python implementation of Markdown"
@@ -1613,6 +1648,23 @@ files = [
 ]
 
 [[package]]
+name = "martor"
+version = "1.6.15"
+description = "Django Markdown Editor"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "martor-1.6.15.tar.gz", hash = "sha256:e119d564f4005c900f89bc975e3890162010918fad5ee58314a313de073b582a"},
+]
+
+[package.dependencies]
+bleach = "*"
+Django = ">=3.2"
+Markdown = "3.3.4"
+requests = "*"
+
+[[package]]
 name = "matplotlib-inline"
 version = "0.1.6"
 description = "Inline Matplotlib backend for Jupyter"
@@ -1638,6 +1690,21 @@ files = [
     {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},
     {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
 ]
+
+[[package]]
+name = "mdgen"
+version = "0.1.10"
+description = "A library to generate random markdown text"
+category = "main"
+optional = false
+python-versions = ">=3.6,<4.0"
+files = [
+    {file = "mdgen-0.1.10-py3-none-any.whl", hash = "sha256:2de4d250b07aa9c84406baa256e6319dad7857d1a02ed3932d0a7997aa666320"},
+    {file = "mdgen-0.1.10.tar.gz", hash = "sha256:5e13f414dc40593a013a9b81436d05d8c9b0c231b2e5fe6766772e88283a2271"},
+]
+
+[package.dependencies]
+Faker = "*"
 
 [[package]]
 name = "mypy-extensions"
@@ -2583,6 +2650,18 @@ files = [
 ]
 
 [[package]]
+name = "webencodings"
+version = "0.5.1"
+description = "Character encoding aliases for legacy web content"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "webencodings-0.5.1-py2.py3-none-any.whl", hash = "sha256:a0af1213f3c2226497a97e2b3aa01a7e4bee4f403f95be16fc9acd2947514a78"},
+    {file = "webencodings-0.5.1.tar.gz", hash = "sha256:b36a1c245f2d304965eb4e0a82848379241dc04b865afcc4aab16748587e1923"},
+]
+
+[[package]]
 name = "werkzeug"
 version = "2.2.2"
 description = "The comprehensive WSGI web application library."
@@ -2678,4 +2757,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "db6e5f7cc3ae33130ffc27664582072605cb10c570d3bdb69bd94538d68403ad"
+content-hash = "caa0a376a0bf3edceeee678045e124fe20c055ff83b914ab97d7d02d01b3ef89"
