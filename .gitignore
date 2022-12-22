@@ -274,7 +274,3 @@ node_modules/
 # Next.js build output
 .next
 out
-
-# poetry
-poetry.lock
-pyproject.toml
