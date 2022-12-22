@@ -15,28 +15,10 @@ urlpatterns = [
         name="api-docs",
     ),
     path("api/forum/", include("apps.forum.urls")),
+    path("api/books/", include("apps.books.urls")),
     path("api/news/", include("apps.news.urls")),
-    path("api/quotes/", include("apps.quotes.urls")),
+    path("api/quotes", include("apps.quotes.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-urlpatterns = (
-    [
-        path("admin/", admin.site.urls),
-        path("api-auth/", include("dj_rest_auth.urls")),
-        path("api-auth/registration/", include("dj_rest_auth.registration.urls")),
-        path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
-        path(
-            "api/docs/",
-            SpectacularSwaggerView.as_view(url_name="api-schema"),
-            name="api-docs",
-        ),
-        path("api/forum/", include("apps.forum.urls")),
-        path("api/books/", include("apps.books.urls")),
-        path("api/news/", include("apps.news.urls")),
-        path("api/quotes/", include("apps.quotes.urls")),
-    ]
-    + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
-)
-
 
 if settings.DEBUG:
     urlpatterns += [
