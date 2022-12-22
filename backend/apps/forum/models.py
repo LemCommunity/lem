@@ -3,6 +3,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 from martor.models import MartorField
 
+from backend.apps.forum.managers import PostManager, ReplyManager
 from backend.apps.forum.utils import is_html, markdown_text
 
 # Create your models here.
@@ -77,6 +78,8 @@ class Post(models.Model):
         related_name="posts_author",
     )
 
+    objects = PostManager()
+
     def __str__(self):
         """Return the string representation of the model."""
         return self.title
@@ -136,6 +139,8 @@ class Reply(models.Model):
         verbose_name="Reply post",
         related_name="reply_post",
     )
+
+    objects = ReplyManager()
 
     def __str__(self):
         """Return the string representation of the model."""

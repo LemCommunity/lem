@@ -17,7 +17,7 @@ fake = Faker()
 
 @pytest.mark.django_db(transaction=True)
 class TestCategoryModel:
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def category_model(self) -> List[str]:
         data = []
         for _ in range(5):
@@ -31,7 +31,7 @@ class TestCategoryModel:
         for category_name in category_model:
             assert category_name[0].isupper() is True
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def category_model_invalid(self) -> Category:
         return CategoryFactory.build(name=factory.LazyFunction(lambda: fake.name()))
 
@@ -49,7 +49,7 @@ def category_name_error() -> None:
 
 @pytest.mark.django_db(transaction=True)
 class TestPostModel:
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def post_model(self) -> Post:
         return PostFactory.create(
             title="some title",
@@ -70,10 +70,15 @@ class TestPostModel:
         assert post_model.category.name == "Category"
         assert post_model.author.email == "emil123@example.com"
 
+    def test_post_sum(self):
+        for _ in range(10):
+            PostFactory.create()
+        assert Post.objects.sum_posts() == 10
+
 
 @pytest.mark.django_db(transaction=True)
 class TestReplyModel:
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def reply_models(self) -> List[None | Reply]:
         first_reply = ReplyFactory.create(parent=ReplyFactory.create())
         second_reply = ReplyFactory.create(parent=None)
@@ -82,3 +87,13 @@ class TestReplyModel:
     def test_reply_model(self, reply_models) -> None:
         assert reply_models[0].is_parent is True
         assert reply_models[1].is_parent is False
+
+    @pytest.fixture()
+    def reply_fifty_model_id(self) -> List[None | Reply]:
+        reply_parent = ReplyFactory.create(parent=None)
+        for _ in range(50):
+            ReplyFactory.create(parent=reply_parent)
+        return reply_parent.id
+
+    def test_reply_parent_sum(self, reply_fifty_model_id):
+        assert Reply.objects.sum_replies(id=reply_fifty_model_id) == 50
