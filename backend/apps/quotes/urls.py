@@ -1,6 +1,3 @@
-from django.urls import path
-from views import quote_cms
+# from django.urls import path
 
-urlpatterns = [
-    path("", quote_cms, name="welcome"),
-]
+urlpatterns = []
