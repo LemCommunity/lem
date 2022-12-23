@@ -17,6 +17,7 @@ urlpatterns = [
     path("api/forum/", include("apps.forum.urls")),
     path("api/books/", include("apps.books.urls")),
     path("api/news/", include("apps.news.urls")),
+    path("api/quotes/", include("apps.quotes.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
