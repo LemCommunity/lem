@@ -1,5 +1,4 @@
 from django.apps import AppConfig
-from django.core.signals import request_finished
 
 
 class ForumConfig(AppConfig):
@@ -7,8 +6,4 @@ class ForumConfig(AppConfig):
     name = "backend.apps.forum"
 
     def ready(self):
-        from backend.apps.forum import signals
-
-        request_finished.connect(signals.category_name)
-        request_finished.connect(signals.category_lenght)
-        request_finished.connect(signals.post_title)
+        from backend.apps.forum import signals  # noqa

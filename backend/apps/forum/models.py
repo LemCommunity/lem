@@ -158,6 +158,13 @@ class Reply(models.Model):
         return False
 
     @property
+    def sum_replies(self):
+        if self.children is None:
+            return 0
+        else:
+            return self.children.count()
+
+    @property
     def is_html_text(self):
         if self.content is not None:
             return is_html(self.content)

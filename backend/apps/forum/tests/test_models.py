@@ -89,11 +89,11 @@ class TestReplyModel:
         assert reply_models[1].is_parent is False
 
     @pytest.fixture()
-    def reply_fifty_model_id(self) -> List[None | Reply]:
+    def reply_fifty_model(self) -> List[None | Reply]:
         reply_parent = ReplyFactory.create(parent=None)
         for _ in range(50):
             ReplyFactory.create(parent=reply_parent)
-        return reply_parent.id
+        return reply_parent
 
-    def test_reply_parent_sum(self, reply_fifty_model_id):
-        assert Reply.objects.sum_replies(id=reply_fifty_model_id) == 50
+    def test_reply_parent_sum(self, reply_fifty_model):
+        assert reply_fifty_model.sum_replies == 50
