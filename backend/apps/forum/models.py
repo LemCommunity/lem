@@ -47,9 +47,14 @@ class Post(models.Model):
     Fields:
         title (CharField): The title of the Post. This field must be unique across all
             Post objects.
-        body (TextField): The content of the post.
-        created_at (DateTimeField): The creation time of the Post. This field is set
+        content_markdown (MartorField): The content of the post markdown.
+        content_html (TextField): The content of the post html.
+        created_at (DateTimeField): The creation datetime of the Post. This field is set
             automatically to the current time when the Post object is first created.
+        updated_at (DateTimeField): The update datetime of the Post. This field is set
+            automatically to the current time when the Post object is updated.
+        slug (AutoSlugField): Create slug field to endpoint, from fields title and
+            method get_slug_datetime.
         category (ForeignKey): The category that the Post belongs to. If the Category
             object that the Post belongs to is deleted, the Post will also be deleted.
         author (ForeignKey): The user who wrote the Post. If the user who wrote the
@@ -125,7 +130,8 @@ class Reply(models.Model):
     """A model representing a reply model.
 
     Fields:
-        content (TextField): The content of the reply.
+        content_markdown (MartorField): The content of the post markdown.
+        content_html (TextField): The content of the post html.
         created_at (DateTimeField): The date and time at which the reply was created.
         updated_at (DateTimeField): The date and time at which the reply was last
             updated.
