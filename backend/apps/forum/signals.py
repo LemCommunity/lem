@@ -9,12 +9,6 @@ def category_name(sender, instance, **kwargs):
     instance.name = instance.name.capitalize()
 
 
-@receiver(pre_save, sender=Category)
-def category_lenght(sender, instance, **kwargs):
-    if instance.name.find(" ") != -1:
-        raise ValueError("Use only one word per category")
-
-
 @receiver(pre_save, sender=Post)
 def post_title(sender, instance, **kwargs):
     instance.title = instance.title.capitalize()
