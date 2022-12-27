@@ -8,6 +8,18 @@ from django.utils.translation import gettext as _
 class Quote(models.Model):
     """
     A model representing a quote.
+
+    Fields:
+        text (models.textField): The text of the quote
+        added_by (models.ForeignKey): The foreign key of the User who added this Quote to.
+        book (models.ForeignKey): The foreign key of the ContentType of the book.
+        tags (GenericRelation): The many to many relation to the tag
+        likes (GenericRelation): The many to many relation to the like
+        created_at (models.DateTimeField): The date of added the Quote. This field is set automatically
+            when the Quote is created.
+        updated_at (models.DateTimeField): The date of updated the Quote. This field is set automatically
+            when the Quote was updated
+
     """
 
     class Meta:
@@ -32,7 +44,7 @@ class Quote(models.Model):
         auto_now_add=True, help_text="The date of creation of the quote."
     )
     updated_at = models.DateTimeField(
-        auto_now=False, help_text="The date when the quote was changed."
+        auto_now=True, help_text="The date when the quote was changed."
     )
 
     def __str__(self):
@@ -46,6 +58,14 @@ class Quote(models.Model):
 class FavoriteQuote(models.Model):
     """
     A model representing a favorite quote.
+
+    Fields:
+        quote (models.ForeignKey): The foreign key of the quote.
+        added_by (ForeignKey): the foreign key of User who added this FavoriteQuote.
+        created_at (models.DateTimeField): The date of added the Quote. This field is set automatically
+            when the Quote is created.
+        updated_at (models.DateTimeField): The date of updated the Quote. This field is set automatically
+            when the Quote was updated
     """
 
     class Meta:
