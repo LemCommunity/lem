@@ -1,10 +1,8 @@
 from django.contrib.auth import get_user_model
-
-# from apps.users.models import User
+from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import gettext as _
-
-User = get_user_model()
 
 
 class Quote(models.Model):
@@ -19,12 +17,17 @@ class Quote(models.Model):
 
     text = models.TextField(null=False, help_text="The text of the quote.")
     added_by = models.ForeignKey(
-        User, on_delete=models.CASCADE, help_text="The user added the quote."
+        get_user_model(),
+        on_delete=models.CASCADE,
+        help_text="The user added the quote.",
     )
-    # TODO:
-    # book = models.ForeignKey("Book", on_delete=models.CASCADE)
-    # tags = models.ManyToManyField("Tag", on_delete=models.CASCADE)
-    # likes = models.ManyToManyField("Like", on_delete=models.CASCADE)
+    book = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        help_text="The foreign key to the book model.",
+    )
+    tags = GenericRelation(ContentType)
+    likes = GenericRelation(ContentType)
     created_at = models.DateTimeField(
         auto_now_add=True, help_text="The date of creation of the quote."
     )
@@ -55,7 +58,7 @@ class FavoriteQuote(models.Model):
     )
 
     added_by = models.ForeignKey(
-        User,
+        get_user_model(),
         on_delete=models.CASCADE,
         help_text="the user added the quote to favorite.",
     )
