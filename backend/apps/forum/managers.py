@@ -1,9 +1,12 @@
 from django.db import models
 
 
+class CategoryManager(models.Manager):
+    pass
+
+
 class PostManager(models.Manager):
-    def sum_posts(self):
-        return super().count()
+    pass
 
 
 class ReplyManager(models.Manager):
