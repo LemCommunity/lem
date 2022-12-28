@@ -36,6 +36,7 @@ repos:
         -   eslint-plugin-react-hooks
         -   eslint-plugin-next
         -   babel-eslint
+        -   prettier
 
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 ci:
