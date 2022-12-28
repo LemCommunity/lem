@@ -26,7 +26,7 @@ repos:
         args: ["--config=setup.cfg"]
 
   -   repo: https://github.com/pre-commit/mirrors-eslint
-    rev: ''  # Use the sha / tag you want to point at
+    rev: v8.30.0
     hooks:
     -   id: eslint
         additional_dependencies:
