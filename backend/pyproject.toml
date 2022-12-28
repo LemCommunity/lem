@@ -23,6 +23,7 @@ redis = "^4.3.4"
 hiredis = "^2.0.0"
 argon2-cffi = "^21.3.0"
 werkzeug = {extras = ["watchdog"], version = "^2.2.2"}
+pillow = "^9.3.0"
 
 [tool.poetry.group.production]
 optional = true
