@@ -62,6 +62,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "corsheaders",
     "drf_spectacular",
+    "martor",
 ]
 
 LOCAL_APPS = [

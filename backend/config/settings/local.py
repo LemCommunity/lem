@@ -39,7 +39,6 @@ EMAIL_BACKEND = env(
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#prerequisites
 INSTALLED_APPS += [  # noqa F405
     "debug_toolbar",
-    "martor",
 ]
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#middleware
 MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]  # noqa F405
