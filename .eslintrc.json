@@ -5,8 +5,7 @@
     },
     "extends": [
       "plugin:react/recommended",
-      "plugin:react-hooks/recommended",
-      "plugin:import/recommended"
+      "plugin:react-hooks/recommended"
     ],
     "parser": "@typescript-eslint/parser",
     "root": true,
