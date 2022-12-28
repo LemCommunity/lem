@@ -1,6 +1,6 @@
 // program to check an Armstrong number of three digits
 
-let sum = 0;
+let test = 0;
 const number = prompt('Enter a three-digit positive integer: ');
 
 // create a temporary variable
@@ -9,13 +9,13 @@ while (temp > 0) {
     // finding the one's digit
     let remainder = temp % 10;
 
-    sum += remainder * remainder * remainder;
+    test += remainder * remainder * remainder;
 
     // removing last digit from the number
     temp = parseInt(temp / 10); // convert float into integer
 }
 // check the condition
-if (sum == number) {
+if (test == number) {
     console.log(`${number} is an Armstrong number`);
 }
 else {
