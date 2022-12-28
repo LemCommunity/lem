@@ -33,7 +33,7 @@ class Category(models.Model):
         validators=[
             RegexValidator(
                 regex=r"^[a-zA-Z]+$",
-                message="Input must contain only alphabetic characters",
+                message="Input must contain only alphabetic characters without spaces",
             ),
         ],
     )
@@ -140,8 +140,8 @@ class Reply(models.Model):
         created_at (DateTimeField): The date and time at which the reply was created.
         updated_at (DateTimeField): The date and time at which the reply was last
             updated.
-        parent (ForeignKey): A foreign key to the parent Post object. Default is None.
-        Can accept one or more self class.
+        parent (ForeignKey): A foreign key to the parent Reply object. Default is None (Reply belong only to Post).
+            Can accept one or more self class.
         author (ForeignKey): A foreign key to the user model representing the author
             of the reply.
         post (ForeignKey): A foreign key to the Post.
