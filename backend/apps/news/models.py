@@ -98,7 +98,6 @@ class Like(Timestamped, PolymorphicRelationship):
 
 class Comment(Timestamped, PolymorphicRelationship):
     body = models.TextField(null=False, blank=False)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return self.body[:20]
