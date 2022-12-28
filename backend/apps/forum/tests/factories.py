@@ -1,4 +1,4 @@
-from factory import Faker, LazyFunction, Sequence, SubFactory
+from factory import Faker, LazyAttribute, LazyFunction, Sequence, SubFactory
 from factory.django import DjangoModelFactory
 from faker import Faker as Fake
 from mdgen import MarkdownPostProvider
@@ -10,25 +10,23 @@ from backend.apps.users.tests.factories import UserFactory
 fake = Fake()
 fake.add_provider(MarkdownPostProvider)
 fake_markdown = fake.post(size="small")
-fake_unique_word = Sequence(lambda n: fake.unique.word().lower())
-fake_unique_two_words = LazyFunction(lambda: fake.unique.name())
 
 
 class CategoryFactory(DjangoModelFactory):
     class Meta:
         model = Category
 
-    name = fake_unique_word
+    name = Sequence(lambda _: fake.unique.word().lower())
 
 
 class PostFactory(DjangoModelFactory):
     class Meta:
         model = Post
 
-    title = fake_unique_two_words
+    title = LazyFunction(lambda: fake.name())
     content_markdown = fake_markdown
     content_html = get_content_html(None, fake_markdown)
-    slug = title
+    slug = LazyAttribute(lambda _: fake.slug())
     created_at = Faker(provider="date_time")
     updated_at = Faker(provider="date_time")
     category = SubFactory(CategoryFactory)

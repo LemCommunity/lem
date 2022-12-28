@@ -4,7 +4,7 @@ from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from martor.models import MartorField
 
-from backend.apps.forum.managers import PostManager, ReplyManager
+from backend.apps.forum.managers import CategoryManager, PostManager, ReplyManager
 from backend.apps.forum.utils import get_content_html
 
 # Create your models here.
@@ -23,14 +23,16 @@ class Category(models.Model):
         verbose_name = "Category"
         verbose_name_plural = "Categories"
 
+    objects = CategoryManager()
+
     name = models.CharField(
-        verbose_name="Name of the category",
+        verbose_name="Category name",
         max_length=100,
         blank=False,
         unique=True,
         validators=[
             RegexValidator(
-                regex=r"^[a-zA-Z]+( [a-zA-Z]+)*$",
+                regex=r"^[a-zA-Z]+$",
                 message="Input must contain only alphabetic characters",
             ),
         ],
@@ -40,16 +42,25 @@ class Category(models.Model):
         """Return the string representation of the model."""
         return self.name
 
+    def save(self, *args, **kwargs):
+        if self.name is not None:
+            self.name = self.name.capitalize()
+        return super().save(*args, **kwargs)
+
 
 class Post(models.Model):
     """A model representing a post model.
 
     Fields:
-        title (CharField): The title of the Post. This field must be unique across all
-            Post objects.
-        body (TextField): The content of the post.
-        created_at (DateTimeField): The creation time of the Post. This field is set
+        title (CharField): The title of the Post.
+        content_markdown (MartorField): The content of the post markdown.
+        content_html (TextField): The content of the post html.
+        created_at (DateTimeField): The creation datetime of the Post. This field is set
             automatically to the current time when the Post object is first created.
+        updated_at (DateTimeField): The update datetime of the Post. This field is set
+            automatically to the current time when the Post object is updated.
+        slug (AutoSlugField): Create slug field to endpoint, from fields title and
+            method get_slug_datetime.
         category (ForeignKey): The category that the Post belongs to. If the Category
             object that the Post belongs to is deleted, the Post will also be deleted.
         author (ForeignKey): The user who wrote the Post. If the user who wrote the
@@ -97,12 +108,12 @@ class Post(models.Model):
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
-        related_name="post",
+        related_name="posts",
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="post",
+        related_name="posts",
     )
 
     def __str__(self):
@@ -110,6 +121,8 @@ class Post(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
+        if self.title is not None:
+            self.title = self.title.capitalize()
         self.content_html = get_content_html(self.content_html, self.content_markdown)
         super(Post, self).save(*args, **kwargs)
 
@@ -117,21 +130,18 @@ class Post(models.Model):
     def get_slug_datetime(self):
         return str(self.created_at.strftime("%H:%M:%S:%d:%m:%Y")).replace(":", "")
 
-    def slugify_function(self, content):
-        return content.replace(" ", "-").lower()
-
 
 class Reply(models.Model):
     """A model representing a reply model.
 
     Fields:
-        content (TextField): The content of the reply.
+        content_markdown (MartorField): The content of the post markdown.
+        content_html (TextField): The content of the post html.
         created_at (DateTimeField): The date and time at which the reply was created.
         updated_at (DateTimeField): The date and time at which the reply was last
             updated.
-        parent (ForeignKey): A foreign key to the parent Post object. If the parent
-            Post is deleted, all its child Posts will also be deleted. This field can
-            be left blank (NULL in the database).
+        parent (ForeignKey): A foreign key to the parent Post object. Default is None.
+        Can accept one or more self class.
         author (ForeignKey): A foreign key to the user model representing the author
             of the reply.
         post (ForeignKey): A foreign key to the Post.
@@ -166,17 +176,17 @@ class Reply(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_name="child",
+        related_name="children",
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="reply",
+        related_name="replies",
     )
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
-        related_name="reply",
+        related_name="replies",
     )
 
     def __str__(self):
@@ -196,7 +206,7 @@ class Reply(models.Model):
 
     @property
     def sum_replies(self):
-        if self.child is None:
+        if self.children is None:
             return 0
         else:
-            return self.child.count()
+            return self.children.count()

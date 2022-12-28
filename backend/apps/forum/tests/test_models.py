@@ -3,6 +3,8 @@ from typing import List
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from faker import Faker
 
 from backend.apps.forum.models import Category, Post, Reply
@@ -20,16 +22,22 @@ fake = Faker()
 @pytest.mark.django_db(transaction=True)
 class TestCategoryModel:
     @pytest.fixture()
-    def category_model(self) -> List[str]:
-        data = []
-        for _ in range(5):
-            category = CategoryFactory.create()
-            data.append(category.name)
-        return data
+    def category_model_name(self) -> str:
+        category = CategoryFactory.create(name="books")
+        return category.name
 
-    def test_category_capitalize_name(self, category_model: List[str]) -> None:
-        for category_name in category_model:
-            assert category_name[0].isupper() is True
+    def test_category_capitalize_name(self, category_model_name: str) -> None:
+        assert category_model_name == "Books"
+
+    def test_invalid_category_name(self):
+        name = "test test"
+        regex = RegexValidator(
+            regex=r"^[a-zA-Z]+$",
+            message="Input must contain only alphabetic characters",
+        )
+        with pytest.raises(ValidationError) as error:
+            CategoryFactory.create(name=regex(name))
+        assert error.value.message == "Input must contain only alphabetic characters"
 
     def test_category_model(self) -> None:
         assert get_field(Category, "name")
@@ -41,17 +49,30 @@ class TestPostModel:
     def post_model(self) -> Post:
         return PostFactory.create()
 
+    def test_content_is_html(self, post_model):
+        assert is_html(post_model.content_html) is True
+
     def test_post_model(self) -> None:
         assert get_field(Post, "title")
         assert get_field(Post, "content_markdown")
         assert get_field(Post, "content_html")
         assert get_field(Post, "slug")
         assert get_field(Post, "title")
-        assert get_field(Post, "category") == get_field(Category, "post")
-        assert get_field(Post, "author") == get_field(User, "post")
+        assert get_field(Post, "category") == get_field(Category, "posts")
+        assert get_field(Post, "author") == get_field(User, "posts")
 
-    def test_content_is_html(self, post_model):
-        assert is_html(post_model.content_html) is True
+    def test_invalid_post_title(self):
+        title = "test%^&*("
+        regex = RegexValidator(
+            regex=r"^[a-zA-Z ]+$",
+            message="Input must contain only alphabetic characters and spaces",
+        )
+        with pytest.raises(ValidationError) as error:
+            PostFactory.create(title=regex(title))
+        assert (
+            error.value.message
+            == "Input must contain only alphabetic characters and spaces"
+        )
 
     def test_content_slug(self):
         post_model = PostFactory.create(
@@ -67,7 +88,7 @@ class TestPostModel:
     def test_post_sum(self):
         for _ in range(10):
             PostFactory.create()
-        assert Post.objects.sum_posts() == 10
+        assert Post.objects.all().count() == 10
 
 
 @pytest.mark.django_db(transaction=True)
@@ -87,9 +108,9 @@ class TestReplyModel:
         assert get_field(Reply, "content_html")
         assert get_field(Reply, "created_at")
         assert get_field(Reply, "updated_at")
-        assert get_field(Reply, "child") == get_field(Reply, "parent")
-        assert get_field(Reply, "author") == get_field(User, "reply")
-        assert get_field(Reply, "post") == get_field(Post, "reply")
+        assert get_field(Reply, "children") == get_field(Reply, "parent")
+        assert get_field(Reply, "author") == get_field(User, "replies")
+        assert get_field(Reply, "post") == get_field(Post, "replies")
 
     @pytest.fixture()
     def reply_fifty_model(self) -> List[None | Reply]:
