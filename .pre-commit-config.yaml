@@ -25,6 +25,18 @@ repos:
       - id: flake8
         args: ["--config=setup.cfg"]
 
+  -   repo: https://github.com/pre-commit/mirrors-eslint
+    rev: ''  # Use the sha / tag you want to point at
+    hooks:
+    -   id: eslint
+        additional_dependencies:
+        -   eslint
+        -   eslint-config-next
+        -   eslint-plugin-react
+        -   eslint-plugin-react-hooks
+        -   eslint-plugin-next
+        -   babel-eslint
+
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 ci:
   autoupdate_schedule: weekly
