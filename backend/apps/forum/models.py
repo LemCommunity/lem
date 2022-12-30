@@ -1,3 +1,4 @@
+import markdown2
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
 from django.db import models
@@ -5,10 +6,29 @@ from django_extensions.db.fields import AutoSlugField
 from martor.models import MartorField
 
 from backend.apps.forum.managers import CategoryManager, PostManager, ReplyManager
-from backend.apps.forum.utils import get_content_html
 
 # Create your models here.
 User = get_user_model()
+
+
+class CompilableMarkdownBase(models.Model):
+    class Meta:
+        abstract = True
+
+    markdown = MartorField(
+        max_length=1000,
+        verbose_name="Markdown content",
+    )
+    compiled_html = models.TextField(
+        editable=False,
+        verbose_name="HTML content",
+        auto_created=True,
+        blank=True,
+    )
+
+    def save(self, *args, **kwargs):
+        self.compiled_html = markdown2.markdown(self.markdown)
+        return super().save(*args, **kwargs)
 
 
 class Category(models.Model):
@@ -28,7 +48,6 @@ class Category(models.Model):
     name = models.CharField(
         verbose_name="Category name",
         max_length=100,
-        blank=False,
         unique=True,
         validators=[
             RegexValidator(
@@ -48,7 +67,7 @@ class Category(models.Model):
         return super().save(*args, **kwargs)
 
 
-class Post(models.Model):
+class Post(CompilableMarkdownBase):
     """A model representing a post model.
 
     Fields:
@@ -78,23 +97,14 @@ class Post(models.Model):
         max_length=100,
         validators=[
             RegexValidator(
-                regex=r"^[a-zA-Z ]+$",
-                message="Input must contain only alphabetic characters and spaces",
+                regex=r"^[a-zA-Z\'\" ]+$",
+                message="Input must contain only alphabetic characters (' and \" included) and spaces",
             ),
         ],
     )
-    content_markdown = MartorField(
-        max_length=300,
-        verbose_name="Post markdown content",
-    )
-    content_html = models.TextField(
-        max_length=400,
-        verbose_name="Post html content",
-        auto_created=True,
-        blank=True,
-    )
+
     slug = AutoSlugField(
-        populate_from=["title", "get_slug_datetime"],
+        populate_from=["slug_datetime", "title"],
         verbose_name="Post slug",
     )
     created_at = models.DateTimeField(
@@ -123,15 +133,14 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         if self.title is not None:
             self.title = self.title.capitalize()
-        self.content_html = get_content_html(self.content_html, self.content_markdown)
         super(Post, self).save(*args, **kwargs)
 
     @property
-    def get_slug_datetime(self):
-        return str(self.created_at.strftime("%H:%M:%S:%d:%m:%Y")).replace(":", "")
+    def slug_datetime(self):
+        return str(self.created_at.strftime("%d-%m-%Y"))
 
 
-class Reply(models.Model):
+class Reply(CompilableMarkdownBase):
     """A model representing a reply model.
 
     Fields:
@@ -153,16 +162,6 @@ class Reply(models.Model):
 
     objects = ReplyManager()
 
-    content_markdown = MartorField(
-        max_length=300,
-        verbose_name="Reply markdown content",
-    )
-    content_html = models.TextField(
-        max_length=400,
-        verbose_name="Reply html content",
-        auto_created=True,
-        blank=True,
-    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name="Created at",
@@ -193,10 +192,6 @@ class Reply(models.Model):
         """Return the string representation of the model."""
         return "Reply"
 
-    def save(self, *args, **kwargs):
-        self.content_html = get_content_html(self.content_html, self.content_markdown)
-        super(Reply, self).save(*args, **kwargs)
-
     @property
     def has_parent(self):
         """Return `True` if instance is a parent."""
@@ -205,8 +200,5 @@ class Reply(models.Model):
         return False
 
     @property
-    def sum_replies(self):
-        if self.children is None:
-            return 0
-        else:
-            return self.children.count()
+    def replies_amount(self):
+        return self.children.count()
