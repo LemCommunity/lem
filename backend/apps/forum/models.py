@@ -12,6 +12,13 @@ User = get_user_model()
 
 
 class CompilableMarkdownBase(models.Model):
+    """A abstract model for storing Markdown. Automatically convert markdown to html.
+
+    Fields:
+        markdown (MartorField (TextField)): Markdown text.
+        compiled_html (TextField): Compiled Markdown to html, is auto created and not editable.
+    """
+
     class Meta:
         abstract = True
 
@@ -27,6 +34,7 @@ class CompilableMarkdownBase(models.Model):
     )
 
     def save(self, *args, **kwargs):
+        """When the model is saved, the markdown field is converted to HTML and saved in the compiled_html field."""
         self.compiled_html = markdown2.markdown(self.markdown)
         return super().save(*args, **kwargs)
 
@@ -35,7 +43,7 @@ class Category(models.Model):
     """A model representing a category model.
 
     Fields:
-        name (str): The name of the category. Must be unique and contain only
+        name (CharField): The name of the category. Must be unique and contain only
             alphabetic characters.
     """
 
@@ -62,6 +70,7 @@ class Category(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
+        """If the name is not None, capitalize it and then save the category."""
         if self.name is not None:
             self.name = self.name.capitalize()
         return super().save(*args, **kwargs)
@@ -72,8 +81,8 @@ class Post(CompilableMarkdownBase):
 
     Fields:
         title (CharField): The title of the Post.
-        content_markdown (MartorField): The content of the post markdown.
-        content_html (TextField): The content of the post html.
+        markdown (MartorField (TextField)): Markdown text.
+        compiled_html (TextField): Compiled Markdown to html, is auto created and not editable.
         created_at (DateTimeField): The creation datetime of the Post. This field is set
             automatically to the current time when the Post object is first created.
         updated_at (DateTimeField): The update datetime of the Post. This field is set
@@ -131,12 +140,14 @@ class Post(CompilableMarkdownBase):
         return self.title
 
     def save(self, *args, **kwargs):
+        """If the title is not None, capitalize it and then save the post"""
         if self.title is not None:
             self.title = self.title.capitalize()
         super(Post, self).save(*args, **kwargs)
 
     @property
     def slug_datetime(self):
+        """Takes the date time of the post and converts it into a string."""
         return str(self.created_at.strftime("%d-%m-%Y"))
 
 
@@ -144,8 +155,8 @@ class Reply(CompilableMarkdownBase):
     """A model representing a reply model.
 
     Fields:
-        content_markdown (MartorField): The content of the post markdown.
-        content_html (TextField): The content of the post html.
+        markdown (MartorField (TextField)): Markdown text.
+        compiled_html (TextField): Compiled Markdown to html, is auto created and not editable.
         created_at (DateTimeField): The date and time at which the reply was created.
         updated_at (DateTimeField): The date and time at which the reply was last
             updated.
@@ -201,4 +212,5 @@ class Reply(CompilableMarkdownBase):
 
     @property
     def replies_amount(self):
+        """It returns the amount of replies a reply has as children."""
         return self.children.count()
