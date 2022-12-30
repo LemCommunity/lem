@@ -76,3 +76,11 @@ services:
       - /app/.next
     depends_on:
       - django
+    
+  nginx:
+    build: ./nginx
+    ports:
+      - 4000:80
+    depends_on:
+      - django
+      - frontend
