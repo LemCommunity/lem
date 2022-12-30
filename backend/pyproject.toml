@@ -23,6 +23,10 @@ redis = "^4.3.4"
 hiredis = "^2.0.0"
 argon2-cffi = "^21.3.0"
 werkzeug = {extras = ["watchdog"], version = "^2.2.2"}
+markdown2 = "^2.4.6"
+pillow = "^9.3.0"
+mdgen = "^0.1.10"
+martor = "^1.6.15"
 
 [tool.poetry.group.production]
 optional = true
