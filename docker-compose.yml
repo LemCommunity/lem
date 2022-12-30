@@ -1,8 +1,5 @@
 version: '3'
 
-volumes:
-  postgres_data:
-
 services:
   django: &django
     build:
@@ -16,12 +13,17 @@ services:
       - redis
     volumes:
       - ./backend:/src:z
+      - static_files:/src/staticfiles:z
     env_file:
       - ./.envs/local/django.env
       - ./.envs/local/postgres.env
     ports:
       - "8000:8000"
     command: /start-django.sh
+
+    networks:
+      - lem_local_backend_frontend_ngnix
+      - lem_local_backend_db
 
   postgres:
     image: postgres:15-alpine
@@ -30,10 +32,14 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.envs/local/postgres.env
+    networks:
+      - lem_local_backend_db
 
   redis:
     image: redis:7
     container_name: lem_local_redis
+    networks:
+      - lem_local_backend_db
 
   celeryworker:
     <<: *django
@@ -45,6 +51,9 @@ services:
     ports: []
     command: /start-celeryworker.sh
 
+    networks:
+      - lem_local_backend_db
+
   celerybeat:
     <<: *django
     image: lem_local_celerybeat
@@ -54,6 +63,8 @@ services:
       - postgres
     ports: []
     command: /start-celerybeat.sh
+    networks:
+      - lem_local_backend_db
 
   flower:
     <<: *django
@@ -62,6 +73,8 @@ services:
     ports:
       - "5555:5555"
     command: /start-flower.sh
+    networks:
+      - lem_local_backend_db
 
   frontend:
     build:
@@ -76,11 +89,28 @@ services:
       - /app/.next
     depends_on:
       - django
-    
+    networks:
+      - lem_local_backend_frontend_ngnix
+
   nginx:
     build: ./nginx
+    container_name: lem_local_ngnix
     ports:
       - 4000:80
+    volumes:
+      - static_files:/staticfiles/:z
     depends_on:
       - django
       - frontend
+    networks:
+      - lem_local_backend_frontend_ngnix
+
+networks:
+  lem_local_backend_db:
+    name: lem_local_backend_db
+  lem_local_backend_frontend_ngnix:
+    name: lem_local_backend_frontend_ngnix
+
+volumes:
+  postgres_data:
+  static_files:
