@@ -5,7 +5,7 @@ set -o nounset
 
 
 celery \
-    -A backend.config.celery \
+    -A config.celery \
     -b "${CELERY_BROKER_URL}" \
     flower \
     --basic_auth="${CELERY_FLOWER_USER}:${CELERY_FLOWER_PASSWORD}"

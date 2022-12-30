@@ -1,4 +1,4 @@
-from backend.config.env import BACKEND_DIR, env
+from config.env import BACKEND_DIR, env
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -35,9 +35,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # URLS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#root-urlconf
-ROOT_URLCONF = "backend.config.urls"
+ROOT_URLCONF = "config.urls"
 # https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
-WSGI_APPLICATION = "backend.config.wsgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # APPS
@@ -66,10 +66,15 @@ THIRD_PARTY_APPS = [
     "django_extensions",
 ]
 
+
 LOCAL_APPS = [
-    "backend.apps.users",
-    "backend.apps.forum",
+    "apps.users",
+    "apps.forum",
+    "apps.news",
+    "apps.books",
+    "apps.quotes",
 ]
+
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 

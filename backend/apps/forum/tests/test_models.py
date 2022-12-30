@@ -5,12 +5,8 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
-from backend.apps.forum.models import Category, CompilableMarkdownBase, Post, Reply
-from backend.apps.forum.tests.factories import (
-    CategoryFactory,
-    PostFactory,
-    ReplyFactory,
-)
+from apps.forum.models import Category, CompilableMarkdownBase, Post, Reply
+from apps.forum.tests.factories import CategoryFactory, PostFactory, ReplyFactory
 
 User = get_user_model()
 
@@ -20,7 +16,7 @@ class TestCompilableMarkdownBase:
         assert get_field(CompilableMarkdownBase, "markdown")
         assert get_field(CompilableMarkdownBase, "compiled_html").auto_created
 
-    @mock.patch("backend.apps.forum.models.models.Model.save")
+    @mock.patch("apps.forum.models.models.Model.save")
     def test_compiled_html(self, mocked_super_save):
         markdown = "**boom!**"
         compiled_html = "<p><strong>boom!</strong></p>\n"

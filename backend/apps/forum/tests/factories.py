@@ -4,8 +4,8 @@ from factory.django import DjangoModelFactory
 from faker import Faker
 from mdgen import MarkdownPostProvider
 
-from backend.apps.forum.models import Category, CompilableMarkdownBase, Post, Reply
-from backend.apps.users.tests.factories import UserFactory
+from apps.forum.models import Category, CompilableMarkdownBase, Post, Reply
+from apps.users.tests.factories import UserFactory
 
 faker = Faker()
 faker.add_provider(MarkdownPostProvider)
@@ -51,6 +51,6 @@ class ReplyFactory(CompilableMarkdownBaseFactory):
     updated_at = LazyAttribute(
         lambda obj: faker.date_time_between_dates(datetime_start=obj.created_at)
     )
-    parent = SubFactory("backend.apps.forum.tests.factories.ReplyFactory", parent=None)
+    parent = SubFactory("apps.forum.tests.factories.ReplyFactory", parent=None)
     author = SubFactory(UserFactory)
     post = SubFactory(PostFactory)

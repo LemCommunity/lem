@@ -5,7 +5,7 @@ from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from martor.models import MartorField
 
-from backend.apps.forum.managers import CategoryManager, PostManager, ReplyManager
+from apps.forum.managers import CategoryManager, PostManager, ReplyManager
 
 # Create your models here.
 User = get_user_model()
