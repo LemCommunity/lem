@@ -58,13 +58,6 @@ class TestCategoryModel:
 
 @pytest.mark.django_db()
 class TestPostModel:
-    @pytest.fixture()
-    def post(self):
-        return PostFactory.create(
-            title="some title",
-            created_at=datetime.datetime(1996, 3, 20, 7, 46, 39),
-        )
-
     def test_fields(self):
         assert get_field(Post, "title")
 
@@ -76,6 +69,13 @@ class TestPostModel:
         assert get_field(Post, "title")
         assert get_field(Post, "category") == get_field(Category, "posts")
         assert get_field(Post, "author") == get_field(User, "posts")
+
+    @pytest.fixture()
+    def post(self):
+        return PostFactory.create(
+            title="some title",
+            created_at=datetime.datetime(1996, 3, 20, 7, 46, 39),
+        )
 
     def test_markdown(self, post):
         markdown = "**boom!**"
