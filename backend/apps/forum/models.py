@@ -6,6 +6,7 @@ from django_extensions.db.fields import AutoSlugField
 from martor.models import MartorField
 
 from apps.forum.managers import CategoryManager, PostManager, ReplyManager
+from apps.forum.validators import ParentValidator
 
 # Create your models here.
 User = get_user_model()
@@ -187,6 +188,7 @@ class Reply(CompilableMarkdownBase):
         null=True,
         blank=True,
         related_name="children",
+        validators=[ParentValidator()],
     )
     author = models.ForeignKey(
         User,

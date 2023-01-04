@@ -162,6 +162,18 @@ class TestReplyModel:
     def test_str(self, reply_models):
         assert str(reply_models[0]) == "Reply"
 
+    def test_parent_validator(self):
+        parent = ReplyFactory(parent=None)
+
+        child = ReplyFactory(parent=parent)
+        child.full_clean()
+
+        another_child = ReplyFactory(parent=parent)
+        with pytest.raises(ValidationError) as error:
+            another_child.full_clean()
+        [message] = error.value.messages
+        assert message == "There cannot be more than one child"
+
 
 def get_field(model, field):
     return getattr(model, field).field
