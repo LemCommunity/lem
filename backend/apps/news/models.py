@@ -7,6 +7,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
+# from apps.generic.models import Like
+
 
 class Timestamped(models.Model):
     """Abstract model to inherit timestapms for creation datetime
@@ -87,13 +89,6 @@ class Highlight(Timestamped, PolymorphicRelationship):
 
     def __str__(self):
         return str(self.highlight)
-
-
-class Like(Timestamped, PolymorphicRelationship):
-    like = models.BooleanField(default=False)
-
-    def __str__(self):
-        return str(self.like)
 
 
 class Comment(Timestamped, PolymorphicRelationship):
