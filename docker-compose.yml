@@ -78,7 +78,7 @@ services:
       - /app/.next
     depends_on:
       - django
-    
+
   nginx:
     build: ./nginx
     ports:
