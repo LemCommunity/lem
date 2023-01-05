@@ -72,6 +72,7 @@ class Image(UserActionTimestamp, PolymorphicRelationship):
         return self.image.url
 
 
+# TODO replace SlugField
 class Tag(UserActionTimestamp, PolymorphicRelationship):
     class Meta:
         ordering = ["tag"]
@@ -91,11 +92,15 @@ class Highlight(UserActionTimestamp, PolymorphicRelationship):
 
 class Comment(UserActionTimestamp, PolymorphicRelationship):
     body = models.TextField(null=False, blank=False)
+    
+    # TODO consider GenericRelation for related likes/reactions
+    likes = GenericRelation(Like, related_query_name="comment")
 
     def __str__(self) -> str:
         return self.body[:20]
 
 
+# TODO consider potential use of model manager
 # class NewsManager(models.Manager):
 #     # override default get_queryset that returns all objects (not filtered)
 #     def get_queryset(self) -> QuerySet:
