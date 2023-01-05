@@ -10,16 +10,16 @@ from django.db import models
 # from apps.generic.models import Like
 
 
-class Timestamped(models.Model):
-    """Abstract model to inherit timestapms for creation datetime
-    and edit datetime. User gets also inherited."""
+class UserActionTimestamp(models.Model):
+    """Abstract model to inherit datetime for obcject creation and/or
+    edit by user as well as inherit foreign key to User object."""
 
     class Meta:
         abstract = True
         ordering = ("-created",)
 
-    created = models.DateTimeField(auto_now_add=True)
-    edited = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    edited_at = models.DateTimeField(auto_now=True)
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
@@ -55,7 +55,7 @@ def directory_path(instance, filename):
     return join(dir_path, filename)
 
 
-class File(Timestamped, PolymorphicRelationship):
+class File(UserActionTimestamp, PolymorphicRelationship):
     MEDIA_TYPE = "files"
 
     file = models.FileField(upload_to=directory_path, blank=True, null=True)
@@ -64,7 +64,7 @@ class File(Timestamped, PolymorphicRelationship):
         return self.file.url
 
 
-class Image(Timestamped, PolymorphicRelationship):
+class Image(UserActionTimestamp, PolymorphicRelationship):
     MEDIA_TYPE = "images"
 
     image = models.ImageField(upload_to=directory_path, blank=True, null=True)
@@ -74,7 +74,7 @@ class Image(Timestamped, PolymorphicRelationship):
         return self.image.url
 
 
-class Tag(Timestamped, PolymorphicRelationship):
+class Tag(UserActionTimestamp, PolymorphicRelationship):
     class Meta:
         ordering = ["tag"]
 
@@ -84,14 +84,14 @@ class Tag(Timestamped, PolymorphicRelationship):
         return self.tag
 
 
-class Highlight(Timestamped, PolymorphicRelationship):
+class Highlight(UserActionTimestamp, PolymorphicRelationship):
     highlight = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.highlight)
 
 
-class Comment(Timestamped, PolymorphicRelationship):
+class Comment(UserActionTimestamp, PolymorphicRelationship):
     body = models.TextField(null=False, blank=False)
 
     def __str__(self) -> str:
@@ -112,7 +112,7 @@ class Comment(Timestamped, PolymorphicRelationship):
 #         return self.all_objects().filter(status='inactive')
 
 
-class News(Timestamped):
+class News(UserActionTimestamp):
     class Meta:
         verbose_name_plural = "News"
 
