@@ -135,7 +135,7 @@ class News(UserActionTimestamp):
     images = GenericRelation(Image, related_query_name="news")  # news image
     tags = GenericRelation(Tag, related_query_name="news")
     highlights = GenericRelation(Highlight, related_query_name="news")
-    likes = GenericRelation(Like, related_query_name="news")
+    # likes = GenericRelation(Like, related_query_name="news")  # Like unavailable as yet.
     comments = GenericRelation(Comment, related_query_name="news")
 
     # TODO consider potential use of model manager
