@@ -1,13 +1,11 @@
 from os.path import join
 
 from django.conf import settings
-
-# from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
-# from apps.generic.models import Like
+# from apps.generic.models import Like (or other model class name for user's reaction)
 
 
 class UserActionTimestamp(models.Model):
@@ -36,20 +34,20 @@ class PolymorphicRelationship(models.Model):
     content_object = GenericForeignKey("content_type", "object_id")
 
 
-def directory_path(instance, filename):
-    """Returns file path including media type, app name, content type name,
+def directory_path(instance, filename: str) -> str:
+    """Returns file path including app name, media type, content type name,
     and file object id.
 
     Args:
-        instance (_class instance_): File or Image class instance
-        filename (_str_): filename
+        instance (class instance): File or Image class object
+        filename (str): filename
 
     Returns:
-        _str_: image's or file's path string
+        str: image's or file's path string
     """
     dir_path = join(
-        instance.MEDIA_TYPE,
         instance.content_type.app_label,
+        instance.MEDIA_TYPE,
         f"{instance.content_type.name}-{instance.object_id}",
     )
     return join(dir_path, filename)
