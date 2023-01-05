@@ -92,7 +92,7 @@ class Highlight(UserActionTimestamp, PolymorphicRelationship):
 
 class Comment(UserActionTimestamp, PolymorphicRelationship):
     body = models.TextField(null=False, blank=False)
-    
+
     # TODO consider GenericRelation for related likes/reactions
     likes = GenericRelation(Like, related_query_name="comment")
 
