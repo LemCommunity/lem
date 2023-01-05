@@ -93,8 +93,9 @@ class Highlight(UserActionTimestamp, PolymorphicRelationship):
 class Comment(UserActionTimestamp, PolymorphicRelationship):
     body = models.TextField(null=False, blank=False)
 
-    # TODO consider GenericRelation for related likes/reactions
-    likes = GenericRelation(Like, related_query_name="comment")
+    # TODO consider GenericRelation for related likes and other reactions
+    # and activate when import available.
+    # likes = GenericRelation(Like, related_query_name="comment")
 
     def __str__(self) -> str:
         return self.body[:20]
@@ -102,17 +103,17 @@ class Comment(UserActionTimestamp, PolymorphicRelationship):
 
 # TODO consider potential use of model manager
 # class NewsManager(models.Manager):
-#     # override default get_queryset that returns all objects (not filtered)
+#     # override default get_queryset and returns published news
 #     def get_queryset(self) -> QuerySet:
-#         return self.all_objects().filter(status='active')
+#         return self.all_objects().filter(is_published=True)
 #
-#     # call this function for getting all objects (default get_queryset)
+#     # call this function for getting all news (default get_queryset)
 #     def all_objects(self) -> QuerySet:
 #         return super().get_queryset()
 #
-#     # call this function for getting objectes filtered for status "inactive"
+#     # call this function for getting not published news
 #     def inactive(self) -> QuerySet:
-#         return self.all_objects().filter(status='inactive')
+#         return self.all_objects().filter(is_published=False)
 
 
 class News(UserActionTimestamp):
@@ -120,29 +121,36 @@ class News(UserActionTimestamp):
         verbose_name_plural = "News"
 
     title = models.CharField(null=False, blank=False, max_length=200)
-    # wysiwyg?
+    # TODO wysiwyg, html issue?
     body = models.TextField(null=False, blank=False)
     is_published = models.BooleanField(default=False)
-    # optional
+
+    # TODO consider the use these fields:
     allow_highlights = models.BooleanField(null=False, blank=False, default=True)
     allow_likes = models.BooleanField(null=False, blank=False, default=True)
     allow_comments = models.BooleanField(null=False, blank=False, default=True)
 
-    # text file with inerview
-    files = GenericRelation(File, related_query_name="news")
-    # image
-    images = GenericRelation(Image, related_query_name="news")
+    # TODO consider below generic ralations:
+    files = GenericRelation(File, related_query_name="news")  # interview text
+    images = GenericRelation(Image, related_query_name="news")  # news image
     tags = GenericRelation(Tag, related_query_name="news")
     highlights = GenericRelation(Highlight, related_query_name="news")
     likes = GenericRelation(Like, related_query_name="news")
     comments = GenericRelation(Comment, related_query_name="news")
 
-    # model manager should it be useful:
+    # TODO consider potential use of model manager
     # objects = NewsManager()
 
     def __str__(self) -> str:
         return f"{self.id}-{self.title}"
 
+    # TODO consider if comments shall be serialized with the news
+    # Can be used to include comments to news response if needed.
     @property
     def comments_list(self):
         return self.comments.all()
+
+    # TODO consider as above, distinct() can be applied.
+    @property
+    def tags_list(self):
+        return self.tags.all()
