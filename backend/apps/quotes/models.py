@@ -42,7 +42,9 @@ class Challenge(models.Model):
         verbose_name="Updated at",
     )
 
-    user = models.ForeignKey(User, related_name="challenges")
+    user = models.ForeignKey(
+        User, on_delete=models.DO_NOTHING, related_name="challenges"
+    )
 
     def __str__(self) -> str:
         """Return the string representation of the model."""
@@ -75,11 +77,17 @@ class ChalengeComments(models.Model):
         auto_now=True,
         verbose_name="Updated at",
     )
-    user = models.ForeignKey(User, related_name="challenges comment")
+    user = models.ForeignKey(
+        User, on_delete=models.DO_NOTHING, related_name="challenges comment"
+    )
 
-    challenge = models.ForeignKey(Challenge, related_name="chalenge")
+    challenge = models.ForeignKey(
+        Challenge, on_delete=models.DO_NOTHING, related_name="chalenge"
+    )
 
-    reply_to = models.ForeignKey("self", null=True, blank=True, related_name="reply")
+    reply_to = models.ForeignKey(
+        "self", null=True, blank=True, on_delete=models.DO_NOTHING, related_name="reply"
+    )
 
     def __str__(self) -> str:
         """Return the string representation of the model."""
