@@ -2,9 +2,6 @@ from django.db import models
 
 
 class ReviewManager(models.Manager):
-    def all_reviews(self):
-        return self.all()
-
     def positive_reviews(self):
         return self.filter(score__gte=3)
 
