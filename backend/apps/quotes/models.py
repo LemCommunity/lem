@@ -78,7 +78,7 @@ class ChalengeComments(models.Model):
         verbose_name="Updated at",
     )
     user = models.ForeignKey(
-        User, on_delete=models.DO_NOTHING, related_name="challenges comment"
+        User, on_delete=models.DO_NOTHING, related_name="challenges_comment"
     )
 
     challenge = models.ForeignKey(
