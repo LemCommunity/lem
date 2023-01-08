@@ -62,6 +62,8 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "corsheaders",
     "drf_spectacular",
+    "martor",
+    "django_extensions",
 ]
 
 
@@ -71,6 +73,7 @@ LOCAL_APPS = [
     "apps.news",
     "apps.books",
     "apps.quotes",
+    "apps.groups",
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
