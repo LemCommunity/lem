@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.urls import reverse
 from django_extensions.db.fields import (
     AutoSlugField,
     CreationDateTimeField,
@@ -13,7 +14,7 @@ from django_extensions.db.fields import (
 # from apps.generic.models import Like (or other model class name for user's reaction)
 
 
-class UserActionTimestampMixin(models.Model):
+class UserActionTimestampedMixin(models.Model):
     """Abstract model to inherit timestamp for obcject creation or
     modification by user as well as inherit foreign key to User object."""
 
@@ -58,7 +59,7 @@ def directory_path(instance, filename: str) -> str:
     return join(dir_path, filename)
 
 
-class File(UserActionTimestampMixin, PolymorphicRelationship):
+class File(UserActionTimestampedMixin, PolymorphicRelationship):
     MEDIA_TYPE = "files"
 
     file = models.FileField(upload_to=directory_path, blank=True, null=True)
@@ -68,7 +69,7 @@ class File(UserActionTimestampMixin, PolymorphicRelationship):
         return self.file.url
 
 
-class Image(UserActionTimestampMixin, PolymorphicRelationship):
+class Image(UserActionTimestampedMixin, PolymorphicRelationship):
     MEDIA_TYPE = "images"
 
     image = models.ImageField(upload_to=directory_path, blank=True, null=True)
@@ -79,7 +80,7 @@ class Image(UserActionTimestampMixin, PolymorphicRelationship):
         return self.image.url
 
 
-class Tag(UserActionTimestampMixin, PolymorphicRelationship):
+class Tag(UserActionTimestampedMixin, PolymorphicRelationship):
     class Meta:
         ordering = ["name"]
 
@@ -91,17 +92,18 @@ class Tag(UserActionTimestampMixin, PolymorphicRelationship):
         return self.name
 
 
-class Highlight(UserActionTimestampMixin, PolymorphicRelationship):
+class Highlight(UserActionTimestampedMixin, PolymorphicRelationship):
     highlight = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.highlight)
 
 
-class Comment(UserActionTimestampMixin, PolymorphicRelationship):
+class Comment(UserActionTimestampedMixin, PolymorphicRelationship):
     body = models.TextField(null=False, blank=False)
+    # TODO validate body input, html issue?
 
-    # TODO consider GenericRelation for related likes and other reactions
+    # TODO consider GenericRelation for related likes or other reactions
     # and activate when import available.
     # likes = GenericRelation(Like, related_query_name="comment")
 
@@ -124,13 +126,15 @@ class Comment(UserActionTimestampMixin, PolymorphicRelationship):
 #         return self.all_objects().filter(is_published=False)
 
 
-class News(UserActionTimestampMixin):
+class News(UserActionTimestampedMixin):
     class Meta:
         verbose_name_plural = "News"
 
     title = models.CharField(null=False, blank=False, max_length=200)
-    # TODO wysiwyg, html issue?
+    # TODO validate title input?
+    slug = AutoSlugField(populate_from="title")
     body = models.TextField(null=False, blank=False)
+    # TODO validate body input, html safety issue?
     is_published = models.BooleanField(default=False)
 
     # TODO consider the use these fields:
@@ -143,16 +147,17 @@ class News(UserActionTimestampMixin):
     images = GenericRelation(Image, related_query_name="news")  # news image
     tags = GenericRelation(Tag, related_query_name="news")
     highlights = GenericRelation(Highlight, related_query_name="news")
-    # likes = GenericRelation(Like, related_query_name="news")  # Like unavailable as yet.
+    # likes = GenericRelation(Like, related_query_name="news")
+    # TODO uncomment likes when Like import available.
     comments = GenericRelation(Comment, related_query_name="news")
 
     # TODO consider potential use of model manager
     # objects = NewsManager()
 
     def __str__(self) -> str:
-        return f"{self.id}-{self.title}"
+        return self.title
 
-    # TODO consider if comments shall be serialized with the news
+    # TODO consider whether comments shall be serialized with the news
     # Can be used to include comments to news response if needed.
     @property
     def comments_list(self):
@@ -162,3 +167,6 @@ class News(UserActionTimestampMixin):
     @property
     def tags_list(self):
         return self.tags.all()
+
+    def get_absolute_url(self):
+        return reverse("news-detail", args=[self.slug])
