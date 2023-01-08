@@ -4,20 +4,25 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django_extensions.db.fields import (
+    AutoSlugField,
+    CreationDateTimeField,
+    ModificationDateTimeField,
+)
 
 # from apps.generic.models import Like (or other model class name for user's reaction)
 
 
-class UserActionTimestamp(models.Model):
-    """Abstract model to inherit datetime for obcject creation and/or
-    edit by user as well as inherit foreign key to User object."""
+class UserActionTimestampMixin(models.Model):
+    """Abstract model to inherit timestamp for obcject creation or
+    modification by user as well as inherit foreign key to User object."""
 
     class Meta:
         abstract = True
         ordering = ("-created",)
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    edited_at = models.DateTimeField(auto_now=True)
+    created_at = CreationDateTimeField()
+    edited_at = ModificationDateTimeField()
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
@@ -53,7 +58,7 @@ def directory_path(instance, filename: str) -> str:
     return join(dir_path, filename)
 
 
-class File(UserActionTimestamp, PolymorphicRelationship):
+class File(UserActionTimestampMixin, PolymorphicRelationship):
     MEDIA_TYPE = "files"
 
     file = models.FileField(upload_to=directory_path, blank=True, null=True)
@@ -62,7 +67,7 @@ class File(UserActionTimestamp, PolymorphicRelationship):
         return self.file.url
 
 
-class Image(UserActionTimestamp, PolymorphicRelationship):
+class Image(UserActionTimestampMixin, PolymorphicRelationship):
     MEDIA_TYPE = "images"
 
     image = models.ImageField(upload_to=directory_path, blank=True, null=True)
@@ -73,7 +78,7 @@ class Image(UserActionTimestamp, PolymorphicRelationship):
 
 
 # TODO replace SlugField
-class Tag(UserActionTimestamp, PolymorphicRelationship):
+class Tag(UserActionTimestampMixin, PolymorphicRelationship):
     class Meta:
         ordering = ["tag"]
 
@@ -83,14 +88,14 @@ class Tag(UserActionTimestamp, PolymorphicRelationship):
         return self.tag
 
 
-class Highlight(UserActionTimestamp, PolymorphicRelationship):
+class Highlight(UserActionTimestampMixin, PolymorphicRelationship):
     highlight = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.highlight)
 
 
-class Comment(UserActionTimestamp, PolymorphicRelationship):
+class Comment(UserActionTimestampMixin, PolymorphicRelationship):
     body = models.TextField(null=False, blank=False)
 
     # TODO consider GenericRelation for related likes and other reactions
@@ -116,7 +121,7 @@ class Comment(UserActionTimestamp, PolymorphicRelationship):
 #         return self.all_objects().filter(is_published=False)
 
 
-class News(UserActionTimestamp):
+class News(UserActionTimestampMixin):
     class Meta:
         verbose_name_plural = "News"
 
