@@ -62,3 +62,17 @@ services:
     ports:
       - "5555:5555"
     command: /start-flower.sh
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./docker/Dockerfile
+    container_name: lem_local_frontend
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - django
