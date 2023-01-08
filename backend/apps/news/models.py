@@ -62,6 +62,7 @@ class File(UserActionTimestampMixin, PolymorphicRelationship):
     MEDIA_TYPE = "files"
 
     file = models.FileField(upload_to=directory_path, blank=True, null=True)
+    # TODO allow only single file upload?
 
     def __str__(self) -> str:
         return self.file.url
@@ -71,21 +72,23 @@ class Image(UserActionTimestampMixin, PolymorphicRelationship):
     MEDIA_TYPE = "images"
 
     image = models.ImageField(upload_to=directory_path, blank=True, null=True)
+    # TODO allow only single picture upload?
     alt_text = models.CharField(max_length=255)
 
     def __str__(self) -> str:
         return self.image.url
 
 
-# TODO replace SlugField
 class Tag(UserActionTimestampMixin, PolymorphicRelationship):
     class Meta:
-        ordering = ["tag"]
+        ordering = ["name"]
 
-    tag = models.SlugField(max_length=50)  # autocomplete?
+    name = models.CharField(unique=True, max_length=50)
+    # TODO validate name input?
+    slug = AutoSlugField(populate_from="name")
 
     def __str__(self) -> str:
-        return self.tag
+        return self.name
 
 
 class Highlight(UserActionTimestampMixin, PolymorphicRelationship):
