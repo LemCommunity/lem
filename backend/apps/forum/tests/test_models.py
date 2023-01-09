@@ -162,6 +162,16 @@ class TestReplyModel:
     def test_str(self, reply_models):
         assert str(reply_models[0]) == "Reply"
 
+    def test_parent_validator(self):
+        parent = ReplyFactory(parent=None)
+        parent.full_clean()  # type: ignore
+        child = ReplyFactory(parent=parent)
+        child.full_clean()  # type: ignore
+
+        with pytest.raises(ValidationError) as error:
+            ReplyFactory(parent=child)
+        assert error.value.message == "Can't add a comment"
+
 
 def get_field(model, field):
     return getattr(model, field).field
