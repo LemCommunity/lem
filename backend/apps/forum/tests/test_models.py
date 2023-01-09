@@ -172,5 +172,6 @@ class TestReplyModel:
             ReplyFactory(parent=child)
         assert error.value.message == "Can't add a comment"
 
+
 def get_field(model, field):
     return getattr(model, field).field
