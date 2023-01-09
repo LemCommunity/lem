@@ -1,4 +1,3 @@
-# flake8: noqa
 import datetime
 from unittest import mock
 
@@ -172,7 +171,6 @@ class TestReplyModel:
         with pytest.raises(ValidationError) as error:
             ReplyFactory(parent=child)
         assert error.value.message == "Can't add a comment"
-
 
 def get_field(model, field):
     return getattr(model, field).field

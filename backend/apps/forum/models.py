@@ -113,7 +113,7 @@ class Post(CompilableMarkdownBase):
         ],
     )
 
-    slug = AutoSlugField(  # type: ignore
+    slug = AutoSlugField(
         populate_from=["slug_datetime", "title"],
         verbose_name="Post slug",
     )
@@ -215,7 +215,7 @@ class Reply(CompilableMarkdownBase):
     @property
     def replies_amount(self):
         """It returns the amount of replies a reply has as children."""
-        return self.children.count()  # type: ignore
+        return self.children.count()
 
     def clean(self):
         if self.parent is not None and self.parent.has_parent is True:
