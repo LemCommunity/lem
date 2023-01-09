@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from apps.quotes.managers import ChalengeCommentManager, ChalengeManager
+from apps.quotes.managers import ChallengeCommentManager, ChallengeManager
 
 # Create your models here.
 User = get_user_model()
@@ -25,13 +25,13 @@ class Challenge(models.Model):
         verbose_name = "Chalenge"
         verbose_name_plural = "Chalenges"
 
-    object = ChalengeManager()
+    objects = ChallengeManager()
 
     active = models.BooleanField(default=False)
 
-    book_to_read = models.IntegerField
+    book_to_read = models.IntegerField()
 
-    books_read = models.IntegerField
+    books_read = models.IntegerField()
 
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -42,16 +42,14 @@ class Challenge(models.Model):
         verbose_name="Updated at",
     )
 
-    user = models.ForeignKey(
-        User, on_delete=models.DO_NOTHING, related_name="challenges"
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="challenges")
 
     def __str__(self) -> str:
         """Return the string representation of the model."""
-        return "Chalenge"
+        return "Challenge"
 
 
-class ChalengeComments(models.Model):
+class ChallengeComments(models.Model):
     """A model representing a challenge model.
 
     Fields:
@@ -65,7 +63,7 @@ class ChalengeComments(models.Model):
         reply_to (ForeignKey): optional if comment is reply to another comment
     """
 
-    object = ChalengeCommentManager()
+    objects = ChallengeCommentManager()
 
     comment = models.TextField()
 
@@ -78,15 +76,15 @@ class ChalengeComments(models.Model):
         verbose_name="Updated at",
     )
     user = models.ForeignKey(
-        User, on_delete=models.DO_NOTHING, related_name="challenges_comment"
+        User, on_delete=models.CASCADE, related_name="challenges_comment"
     )
 
     challenge = models.ForeignKey(
-        Challenge, on_delete=models.DO_NOTHING, related_name="chalenge"
+        Challenge, on_delete=models.CASCADE, related_name="chalenge"
     )
 
     reply_to = models.ForeignKey(
-        "self", null=True, blank=True, on_delete=models.DO_NOTHING, related_name="reply"
+        "self", null=True, blank=True, on_delete=models.CASCADE, related_name="reply"
     )
 
     def __str__(self) -> str:

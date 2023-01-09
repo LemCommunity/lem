@@ -1,9 +1,9 @@
 from django.db import models
 
 
-class ChalengeManager(models.Manager):
+class ChallengeManager(models.Manager):
     pass
 
 
-class ChalengeCommentManager(models.Manager):
+class ChallengeCommentManager(models.Manager):
     pass
