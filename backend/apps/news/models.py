@@ -80,16 +80,15 @@ class Comment(UserActionTimestampedMixin, PolymorphicRelationship):
 # draft for further development depending on needs
 class NewsManager(models.Manager):
     def get_queryset(self):
-        """override default get_queryset and returns published news"""
+        """Returns queryset with published news objects."""
         return self.all_objects().filter(is_published=True)
 
-    # call this function for getting all news (default get_queryset)
     def all_objects(self):
-        """call this function for getting all news (default get_queryset)"""
+        """Returns queryest with all news objects (default get_queryset)"""
         return super().get_queryset()
 
-    # call this function for getting not published news
     def inactive(self):
+        """Returns queryset with not published news objects"""
         return self.all_objects().filter(is_published=False)
 
 
