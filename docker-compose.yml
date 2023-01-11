@@ -2,6 +2,7 @@ version: '3'
 
 volumes:
   postgres_data:
+  django_static:
 
 services:
   django: &django
@@ -16,6 +17,7 @@ services:
       - redis
     volumes:
       - ./backend:/src:z
+      - django_static:/src/staticfiles:z
     env_file:
       - ./.envs/local/django.env
       - ./.envs/local/postgres.env
@@ -76,3 +78,13 @@ services:
       - /app/.next
     depends_on:
       - django
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 4000:80
+    volumes:
+      - django_static:/usr/share/nginx/django_static
+    depends_on:
+      - django
+      - frontend
