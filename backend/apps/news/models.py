@@ -1,8 +1,9 @@
-from os.path import join
+"""News app models"""
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.core.validators import MaxLengthValidator, MinLengthValidator
 from django.db import models
 from django.urls import reverse
 from django_extensions.db.fields import (
@@ -11,7 +12,7 @@ from django_extensions.db.fields import (
     ModificationDateTimeField,
 )
 
-# from apps.generic.models import Like (or other model class name for user's reaction)
+# from apps.generic.models import Like, File, Picture
 
 
 class UserActionTimestampedMixin(models.Model):
@@ -40,133 +41,99 @@ class PolymorphicRelationship(models.Model):
     content_object = GenericForeignKey("content_type", "object_id")
 
 
-def directory_path(instance, filename: str) -> str:
-    """Returns file path including app name, media type, content type name,
-    and file object id.
-
-    Args:
-        instance (class instance): File or Image class object
-        filename (str): filename
-
-    Returns:
-        str: image's or file's path string
-    """
-    dir_path = join(
-        instance.content_type.app_label,
-        instance.MEDIA_TYPE,
-        f"{instance.content_type.name}-{instance.object_id}",
-    )
-    return join(dir_path, filename)
-
-
-class File(UserActionTimestampedMixin, PolymorphicRelationship):
-    MEDIA_TYPE = "files"
-
-    file = models.FileField(upload_to=directory_path, blank=True, null=True)
-    # TODO allow only single file upload?
-
-    def __str__(self) -> str:
-        return self.file.url
-
-
-class Image(UserActionTimestampedMixin, PolymorphicRelationship):
-    MEDIA_TYPE = "images"
-
-    image = models.ImageField(upload_to=directory_path, blank=True, null=True)
-    # TODO allow only single picture upload?
-    alt_text = models.CharField(max_length=255)
-
-    def __str__(self) -> str:
-        return self.image.url
-
-
-class Tag(UserActionTimestampedMixin, PolymorphicRelationship):
-    class Meta:
-        ordering = ["name"]
-
-    name = models.CharField(unique=True, max_length=50)
-    # TODO validate name input?
-    slug = AutoSlugField(populate_from="name")
-
-    def __str__(self) -> str:
-        return self.name
-
-
 class Highlight(UserActionTimestampedMixin, PolymorphicRelationship):
+    """Highlight model"""
+
     highlight = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.highlight)
 
 
-class Comment(UserActionTimestampedMixin, PolymorphicRelationship):
-    body = models.TextField(null=False, blank=False)
-    # TODO validate body input, html issue?
+class Tag(UserActionTimestampedMixin, PolymorphicRelationship):
+    """Tag model"""
 
-    # TODO consider GenericRelation for related likes or other reactions
-    # and activate when import available.
+    class Meta:
+        ordering = ["name"]
+
+    name = models.CharField(unique=True, max_length=50)
+    # TODO add validators
+
+    slug = AutoSlugField(populate_from="name")
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class Comment(UserActionTimestampedMixin, PolymorphicRelationship):
+    """Comment model"""
+
+    body = models.TextField(null=False, blank=False)
+    # TODO add validators
+
     # likes = GenericRelation(Like, related_query_name="comment")
 
     def __str__(self) -> str:
         return self.body[:20]
 
 
-# TODO consider potential use of model manager
-# class NewsManager(models.Manager):
-#     # override default get_queryset and returns published news
-#     def get_queryset(self) -> QuerySet:
-#         return self.all_objects().filter(is_published=True)
-#
-#     # call this function for getting all news (default get_queryset)
-#     def all_objects(self) -> QuerySet:
-#         return super().get_queryset()
-#
-#     # call this function for getting not published news
-#     def inactive(self) -> QuerySet:
-#         return self.all_objects().filter(is_published=False)
+# draft for further development depending on needs
+class NewsManager(models.Manager):
+    def get_queryset(self):
+        """override default get_queryset and returns published news"""
+        return self.all_objects().filter(is_published=True)
+
+    # call this function for getting all news (default get_queryset)
+    def all_objects(self):
+        """call this function for getting all news (default get_queryset)"""
+        return super().get_queryset()
+
+    # call this function for getting not published news
+    def inactive(self):
+        return self.all_objects().filter(is_published=False)
 
 
 class News(UserActionTimestampedMixin):
     class Meta:
         verbose_name_plural = "News"
 
-    title = models.CharField(null=False, blank=False, max_length=200)
-    # TODO validate title input?
-    slug = AutoSlugField(populate_from="title")
+    title = models.CharField(
+        null=False,
+        blank=False,
+        max_length=200,
+        validators=[
+            MinLengthValidator(3, message="Title must be of at least 3 characters."),
+            MaxLengthValidator(
+                200, message="Title cannot be longer then 200 characters."
+            ),
+            # TODO add RegexValidator
+        ],
+    )
+    slug = AutoSlugField(populate_from=["title"])
+
     body = models.TextField(null=False, blank=False)
-    # TODO validate body input, html safety issue?
+    # TODO add body validator, html safety issue?
+
     is_published = models.BooleanField(default=False)
 
-    # TODO consider the use these fields:
     allow_highlights = models.BooleanField(null=False, blank=False, default=True)
     allow_likes = models.BooleanField(null=False, blank=False, default=True)
     allow_comments = models.BooleanField(null=False, blank=False, default=True)
 
-    # TODO consider below generic ralations:
-    files = GenericRelation(File, related_query_name="news")  # interview text
-    images = GenericRelation(Image, related_query_name="news")  # news image
+    objects = NewsManager()
+
+    # files = GenericRelation(File, related_query_name="news")  # interview text
+    # images = GenericRelation(Image, related_query_name="news")  # news image
+
     tags = GenericRelation(Tag, related_query_name="news")
     highlights = GenericRelation(Highlight, related_query_name="news")
-    # likes = GenericRelation(Like, related_query_name="news")
-    # TODO uncomment likes when Like import available.
-    comments = GenericRelation(Comment, related_query_name="news")
 
-    # TODO consider potential use of model manager
-    # objects = NewsManager()
+    # likes = GenericRelation(Like, related_query_name="news")
+
+    comments = GenericRelation(Comment, related_query_name="news")
 
     def __str__(self) -> str:
         return self.title
-
-    # TODO consider whether comments shall be serialized with the news
-    # Can be used to include comments to news response if needed.
-    @property
-    def comments_list(self):
-        return self.comments.all()
-
-    # TODO consider as above, distinct() can be applied.
-    @property
-    def tags_list(self):
-        return self.tags.all()
 
     def get_absolute_url(self):
         return reverse("news-detail", args=[self.slug])
