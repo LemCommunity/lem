@@ -22,8 +22,8 @@ class UserActionTimestampedMixin(models.Model):
         abstract = True
         ordering = ("-created",)
 
-    created_at = CreationDateTimeField()
-    edited_at = ModificationDateTimeField()
+    created = CreationDateTimeField()
+    modified = ModificationDateTimeField()
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
