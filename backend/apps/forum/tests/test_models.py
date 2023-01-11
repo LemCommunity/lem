@@ -2,6 +2,7 @@ import datetime
 from unittest import mock
 
 import pytest
+import pytz
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
@@ -101,6 +102,21 @@ class TestPostModel:
 
     def test_capitalize_title(self, post):
         assert post.title == "Some title"
+
+    @mock.patch("django.utils.timezone.now")
+    def test_auto_now_created_at_and_slug(self, mocked_now, post):
+        created_at = datetime.datetime(2018, 4, 4, 0, 0, 0, tzinfo=pytz.utc)
+        mocked_now.return_value = created_at
+
+        post = PostFactory.build(created_at=None)
+        post.category.save()
+        post.author.save()
+
+        post.save()
+
+        assert post.created_at is not None
+
+        assert "04-04-2018" in post.slug
 
     def test_slug(self, post):
         assert post.slug == "20-03-1996-some-title"
