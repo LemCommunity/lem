@@ -22,16 +22,16 @@ class Challenge(models.Model):
     """
 
     class Meta:
-        verbose_name = "Chalenge"
-        verbose_name_plural = "Chalenges"
+        verbose_name = "Challenge"
+        verbose_name_plural = "Challenges"
 
     objects = ChallengeManager()
 
     active = models.BooleanField(default=False)
 
-    book_to_read = models.IntegerField()
+    book_to_read = models.IntegerField(default=0)
 
-    books_read = models.IntegerField()
+    books_read = models.IntegerField(default=0)
 
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -80,7 +80,7 @@ class ChallengeComments(models.Model):
     )
 
     challenge = models.ForeignKey(
-        Challenge, on_delete=models.CASCADE, related_name="chalenge"
+        Challenge, on_delete=models.CASCADE, related_name="challenge"
     )
 
     reply_to = models.ForeignKey(
