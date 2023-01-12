@@ -73,7 +73,7 @@ class Tag(UserActionTimestampedMixin, PolymorphicRelationship):
         max_length=50,
         validators=[
             MinLengthValidator(3, message=_("Min length is 3 characters.")),
-            MaxLengthValidator(200, message=_("Max length is 200 characters.")),
+            MaxLengthValidator(50, message=_("Max length is 200 characters.")),
             validate_slug,
         ],
         help_text=_("Must be unique, only alphanumeric allowed"),
