@@ -72,10 +72,12 @@ class TestPostModel:
         assert get_field(Post, "author") == get_field(User, "posts")
 
     @pytest.fixture()
-    def post(self):
+    @mock.patch("django.utils.timezone.now")
+    def post(self, mocked_now):
+        created_at = datetime.datetime(1996, 3, 20, 0, 0, 0, tzinfo=pytz.utc)
+        mocked_now.return_value = created_at
         return PostFactory.create(
             title="some title",
-            created_at=datetime.datetime(1996, 3, 20, 7, 46, 39),
         )
 
     def test_markdown(self, post):
@@ -103,32 +105,20 @@ class TestPostModel:
     def test_capitalize_title(self, post):
         assert post.title == "Some title"
 
-    @mock.patch("django.utils.timezone.now")
-    def test_auto_now_created_at_and_slug(self, mocked_now, post):
-        created_at = datetime.datetime(2018, 4, 4, 0, 0, 0, tzinfo=pytz.utc)
-        mocked_now.return_value = created_at
-
-        post = PostFactory.build(created_at=None)
-        post.category.save()
-        post.author.save()
-
-        post.save()
-
-        assert post.created_at is not None
-
-        assert "04-04-2018" in post.slug
-
     def test_slug(self, post):
         assert post.slug == "20-03-1996-some-title"
 
     @pytest.fixture()
-    def post2(self):
+    @mock.patch("django.utils.timezone.now")
+    def post2(self, mocked_now):
+        created_at = datetime.datetime(1996, 3, 20, 0, 0, 0, tzinfo=pytz.utc)
+        mocked_now.return_value = created_at
         return PostFactory.create(
             title="some title",
-            created_at=datetime.datetime(1996, 3, 20, 7, 46, 39),
         )
 
     def test_slug_uniqueness(self, post, post2):
+        print(post.slug)
         assert post.slug != post2.slug
         assert post2.slug.endswith("-2")
 
