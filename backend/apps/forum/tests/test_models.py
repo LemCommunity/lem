@@ -118,7 +118,6 @@ class TestPostModel:
         )
 
     def test_slug_uniqueness(self, post, post2):
-        print(post.slug)
         assert post.slug != post2.slug
         assert post2.slug.endswith("-2")
 

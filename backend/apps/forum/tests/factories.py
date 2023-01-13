@@ -33,7 +33,6 @@ class PostFactory(CompilableMarkdownBaseFactory):
         model = Post
 
     title = LazyFunction(lambda: faker.name())
-
     slug = LazyFunction(lambda: faker.slug())
     category = SubFactory(CategoryFactory)
     author = SubFactory(UserFactory)
