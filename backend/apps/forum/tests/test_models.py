@@ -3,10 +3,11 @@ from unittest import mock
 
 import pytest
 import pytz
-from apps.forum.models import Category, CompilableMarkdownBase, Post, Reply
-from apps.forum.tests.factories import CategoryFactory, PostFactory, ReplyFactory
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+
+from apps.forum.models import Category, CompilableMarkdownBase, Post, Reply
+from apps.forum.tests.factories import CategoryFactory, PostFactory, ReplyFactory
 
 User = get_user_model()
 
