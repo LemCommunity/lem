@@ -33,12 +33,7 @@ class PostFactory(CompilableMarkdownBaseFactory):
         model = Post
 
     title = LazyFunction(lambda: faker.name())
-
     slug = LazyFunction(lambda: faker.slug())
-    created_at = LazyFunction(lambda: faker.date_time())
-    updated_at = LazyAttribute(
-        lambda obj: faker.date_time_between_dates(datetime_start=obj.created_at)
-    )
     category = SubFactory(CategoryFactory)
     author = SubFactory(UserFactory)
 
@@ -47,10 +42,6 @@ class ReplyFactory(CompilableMarkdownBaseFactory):
     class Meta:
         model = Reply
 
-    created_at = LazyFunction(lambda: faker.date_time())
-    updated_at = LazyAttribute(
-        lambda obj: faker.date_time_between_dates(datetime_start=obj.created_at)
-    )
     parent = SubFactory("apps.forum.tests.factories.ReplyFactory", parent=None)
     author = SubFactory(UserFactory)
     post = SubFactory(PostFactory)

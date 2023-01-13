@@ -2,6 +2,7 @@ import datetime
 from unittest import mock
 
 import pytest
+import pytz
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
@@ -71,10 +72,12 @@ class TestPostModel:
         assert get_field(Post, "author") == get_field(User, "posts")
 
     @pytest.fixture()
-    def post(self):
+    @mock.patch("django.utils.timezone.now")
+    def post(self, mocked_now):
+        created_at = datetime.datetime(1996, 3, 20, 0, 0, 0, tzinfo=pytz.utc)
+        mocked_now.return_value = created_at
         return PostFactory.create(
             title="some title",
-            created_at=datetime.datetime(1996, 3, 20, 7, 46, 39),
         )
 
     def test_markdown(self, post):
@@ -106,10 +109,12 @@ class TestPostModel:
         assert post.slug == "20-03-1996-some-title"
 
     @pytest.fixture()
-    def post2(self):
+    @mock.patch("django.utils.timezone.now")
+    def post2(self, mocked_now):
+        created_at = datetime.datetime(1996, 3, 20, 0, 0, 0, tzinfo=pytz.utc)
+        mocked_now.return_value = created_at
         return PostFactory.create(
             title="some title",
-            created_at=datetime.datetime(1996, 3, 20, 7, 46, 39),
         )
 
     def test_slug_uniqueness(self, post, post2):

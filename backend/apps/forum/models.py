@@ -112,10 +112,6 @@ class Post(CompilableMarkdownBase):
         ],
     )
 
-    slug = AutoSlugField(
-        populate_from=["slug_datetime", "title"],
-        verbose_name="Post slug",
-    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name="Created at",
@@ -133,6 +129,10 @@ class Post(CompilableMarkdownBase):
         User,
         on_delete=models.CASCADE,
         related_name="posts",
+    )
+    slug = AutoSlugField(
+        populate_from=["slug_datetime", "title"],
+        verbose_name="Post slug",
     )
 
     def __str__(self):
