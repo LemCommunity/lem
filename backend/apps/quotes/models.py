@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django_extensions.db.fields import CreationDateTimeField
 
 from apps.quotes.managers import ChallengeCommentManager, ChallengeManager
 
@@ -33,10 +34,7 @@ class Challenge(models.Model):
 
     books_read = models.IntegerField(default=0)
 
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name="Created at",
-    )
+    created_at = CreationDateTimeField(verbose_name="Create at")
     updated_at = models.DateTimeField(
         auto_now=True,
         verbose_name="Updated at",
