@@ -27,8 +27,7 @@ class UserFactory(DjangoModelFactory):
         password = (
             extracted
             if extracted
-            else Faker(
-                "password",
+            else faker.password(
                 length=42,
                 special_chars=True,
                 digits=True,
