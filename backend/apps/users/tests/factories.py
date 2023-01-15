@@ -1,8 +1,6 @@
-from collections.abc import Sequence
-from typing import Any
-
 from django.contrib.auth import get_user_model
-from factory import LazyFunction, post_generation
+from django.contrib.auth.hashers import make_password
+from factory import LazyFunction
 from factory.django import DjangoModelFactory
 from faker import Faker
 from faker.providers import internet, misc
@@ -21,18 +19,4 @@ class UserFactory(DjangoModelFactory):
     email = LazyFunction(lambda: faker.email())
     first_name = LazyFunction(lambda: faker.first_name())
     last_name = LazyFunction(lambda: faker.last_name())
-
-    @post_generation
-    def password(self, create: bool, extracted: Sequence[Any], **kwargs):
-        password = (
-            extracted
-            if extracted
-            else faker.password(
-                length=42,
-                special_chars=True,
-                digits=True,
-                upper_case=True,
-                lower_case=True,
-            ).evaluate(None, None, extra={"locale": None})
-        )
-        self.set_password(password)
+    password = LazyFunction(lambda: make_password(faker.password()))
