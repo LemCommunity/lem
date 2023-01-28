@@ -1,5 +1,6 @@
 from django.core.validators import RegexValidator
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import (
     AutoSlugField,
@@ -44,7 +45,10 @@ class Author(models.Model):
     # highlights = GenericRelation(Highlight, related_query_name="authors")
 
     def __str__(self) -> str:
-        return self.full_name
+        return f"{self.first_name} {self.last_name}"
+
+    def get_absolute_url(self):
+        return reverse("author-detail", args=[self.slug])
 
 
 class Genre(models.Model):
@@ -116,10 +120,21 @@ class Book(models.Model):
     dimensions = models.ForeignKey("BookSize", on_delete=models.CASCADE)
     catalog_number = models.IntegerField()
     ISBN_id = models.IntegerField()
-    genre = models.ManyToManyField(Genre, related_name="books")
+    genres = models.ManyToManyField(Genre, related_name="books")
 
     # author field
-    author = models.ManyToManyField(Author, related_name="books")
+    authors = models.ManyToManyField(Author, related_name="books")
+
+    # highlights = GenericRelation(Highlight, related_query_name="books")
+
+    # revews as generic model? it is very similar to comment for news
+    # reviews = GenericRelation(Review, related_query_name="book")
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse("book-detail", args=[self.title])
 
 
 class BookLanguage(models.Model):
