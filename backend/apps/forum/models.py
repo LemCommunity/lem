@@ -1,5 +1,6 @@
 import markdown2
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
@@ -186,6 +187,7 @@ class Reply(CompilableMarkdownBase):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
+        default=None,
         related_name="children",
     )
     author = models.ForeignKey(
@@ -214,3 +216,7 @@ class Reply(CompilableMarkdownBase):
     def replies_amount(self):
         """It returns the amount of replies a reply has as children."""
         return self.children.count()
+
+    def clean(self):
+        if self.parent is not None and self.parent.has_parent is True:
+            raise ValidationError("Can't add a comment")
